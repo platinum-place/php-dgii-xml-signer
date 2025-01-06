@@ -12,26 +12,31 @@ Probado en las versiones de php 8.1.12 y 8.1.13
 
 /*
 Nota:
+
 **Refactorizaciones al archivo XmlSigner.php
-al instanciar la clase DOMDocument coloque la propiedad preserveWhiteSpace a false debido a
-que los espacios en blanco no deben ser preservados
-Existe otra función que recibe un DOMDocument recuerde ajustar este valor antes de enviar el
-objeto.
- $xml->preserveWhiteSpace = true; cambiar a $xml->preserveWhiteSpace = false;
+
+al instanciar la clase DOMDocument coloque la propiedad preserveWhiteSpace a false debido a que los espacios en blanco no deben ser preservados.
+
+Existe otra función que recibe un DOMDocument recuerde ajustar este valor antes de enviar el objeto.
+
+$xml->preserveWhiteSpace = true; cambiar a $xml->preserveWhiteSpace = false;
+
  **Por otro lado
 
 $canonicalData = $element->C14N(true, false); cambiar a $canonicalData = $element->C14N(false, false);
 
-$c14nSignedInfo = $signedInfoElement->C14N(true, false); cambiar a $c14nSignedInfo = $signedInfoElement->C14N(false, false);
+en la linea 179,
+$c14nSignedInfo = $signedInfoElement->C14N(true, false); cambiar a $c14nSignedInfo = $signedInfoElement->C14N(false, false) o $signedInfoElement->C14N();
 
- puede dejarlos sin parámetros puesto que sus valores por defecto son false, es decir puede ser
-=> $canonicalData = $element->C14N()
- **En la función appendSignature puede comentar las líneas 154 hasta la 170, los tag KeyValue,
-RSAKeyValue, Exponent no son necesarios
- **Recuerde habilitar la extensión openssl en su archivo php.ini, en algunas distribuciones esta
-deshabilitado por defecto.
+puede dejarlos sin parámetros puesto que sus valores por defecto son false, es decir puede ser => $canonicalData = $element->C14N()
+
+**En la función appendSignature
+
+puede comentar las líneas 154 hasta la 170, los tag KeyValue, RSAKeyValue, Exponent no son necesarios
+
+**Recuerde habilitar la extensión openssl en su archivo php.ini, en algunas distribuciones esta deshabilitado por defecto.
+
 */
-
 final class SignManager
 {
     /**

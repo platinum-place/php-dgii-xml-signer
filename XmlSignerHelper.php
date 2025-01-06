@@ -13,7 +13,7 @@ use UnexpectedValueException;
 /**
  * Sign XML Documents with Digital Signatures (XMLDSIG).
  */
-final class XmlSigner
+final class XmlSignerHelper
 {
     private string $referenceUri = '';
 
