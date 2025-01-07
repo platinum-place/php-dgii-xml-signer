@@ -24,13 +24,20 @@ Para mantener la integridad de la biblioteca original y seguir las recomendacion
 - Copiar la clase completa `XmlSigner` y crear una nueva clase en otra ubicación dentro de tu proyecto con las modificaciones necesarias.
 - Referenciar esta nueva clase en la segunda clase recomendada por la documentación.
 
-### Recomendación sobre la Versión de PHP
+### Recomendación sobre la Versión de PHP y OpenSSL
 
-- Se recomienda utilizar **PHP 8.2** debido a que la biblioteca OpenSSL incorporada en esta versión es compatible con la versión **1.1.1p**, la cual implementa el algoritmo necesario para la lectura de archivos `.p12`.
-- Si se emplea una versión superior de PHP o de la biblioteca OpenSSL, es posible que el algoritmo requerido sea clasificado como **"legacy"**.
-- Es factible acceder a las configuraciones del paquete y ajustarlas para que utilicen la versión **"legacy"** del algoritmo en cualquier versión de PHP o de la biblioteca, garantizando así la funcionalidad deseada.
+- Usa **PHP 8.2** si necesitas trabajar con archivos `.p12`. Esta versión incluye OpenSSL 1.1.1p, que soporta el algoritmo necesario.
+
+- En versiones más recientes de PHP u OpenSSL, el algoritmo requerido puede clasificarse como **"legacy"** y no estará disponible por defecto.
+
+- Para solucionarlo:
+  1. Modifica el archivo `openssl.cnf` para habilitar los algoritmos "legacy".
+  2. Alternativamente, usa el argumento `-legacy` en los comandos de OpenSSL.
+
+Esto garantiza que puedas trabajar con archivos `.p12` sin problemas.
 
 ## Referencias
 
 - [Firmado de e-CF - DGII](https://dgii.gov.do/cicloContribuyente/facturacion/comprobantesFiscalesElectronicosE-CF/Documentacin%20sobre%20eCF/Instructivos%20sobre%20Facturaci%C3%B3n%20Electr%C3%B3nica/Firmado%20de%20e-CF.pdf)
 - [Biblioteca xmldsig para PHP](https://github.com/selective-php/xmldsig)
+- [Habilitar la compatibilidad heredada en OpenSSL](https://www.practicalnetworking.net/practical-tls/openssl-3-and-legacy-providers/).
