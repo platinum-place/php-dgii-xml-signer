@@ -26,15 +26,26 @@ Para mantener la integridad de la biblioteca original y seguir las recomendacion
 
 ### Recomendación sobre la Versión de PHP y OpenSSL
 
-- Usa **PHP 8.2** si necesitas trabajar con archivos `.p12`. Esta versión incluye OpenSSL 1.1.1p, que soporta el algoritmo necesario.
+- El problema ocurre porque OpenSSL 3.0 (utilizado en versiones recientes de PHP) clasifica algunos algoritmos como **"legacy"** y no los habilita por defecto, lo que impide trabajar con archivos `.p12` que usan esos algoritmos.
 
-- En versiones más recientes de PHP u OpenSSL, el algoritmo requerido puede clasificarse como **"legacy"** y no estará disponible por defecto.
+- **Solución 1**: Usa PHP 8.2, que incluye OpenSSL 1.1.1p, donde los algoritmos necesarios están habilitados por defecto.
 
-- Para solucionarlo:
-  1. Modifica el archivo `openssl.cnf` para habilitar los algoritmos "legacy".
-  2. Alternativamente, usa el argumento `-legacy` en los comandos de OpenSSL.
+- **Solución 2**: Si usas OpenSSL 3.0 o superior:
+  1. Modifica el archivo `openssl.cnf` para activar el soporte "legacy". 
+     - En la sección `[provider_sect]`, agrega:
+       ```
+       legacy = legacy_sect
+       ```
+     - En `[legacy_sect]`, asegura que esté:
+       ```
+       activate = 1
+       ```
+  2. Usa el argumento `-legacy` en comandos de OpenSSL:
+     ```bash
+     openssl pkcs12 -in archivo.p12 -legacy -nodes
+     ```
 
-Esto garantiza que puedas trabajar con archivos `.p12` sin problemas.
+Esto habilita los algoritmos necesarios y soluciona el problema.
 
 ## Referencias
 
