@@ -1,5 +1,7 @@
 <?php
 
+namespace app\Helpers;
+
 use Exception;
 use Selective\XmlDSig\Algorithm;
 use Selective\XmlDSig\CryptoSigner;
@@ -37,23 +39,24 @@ puede comentar las líneas 154 hasta la 170, los tag KeyValue, RSAKeyValue, Expo
 **Recuerde habilitar la extensión openssl en su archivo php.ini, en algunas distribuciones esta deshabilitado por defecto.
 
 */
-final class SignManager
+
+final class SignManagerHelper
 {
     /**
      * The constructor.
      *
-     * @param  string  $cert_store  contenido del archivo p12
-     * @param  string  $password  contraseña para acceder a la información contenida en el certificado
-     * @param  string  $xml  contenido del archivo xml
+     * @param string $cert_store contenido del archivo p12
+     * @param string $password contraseña para acceder a la información contenida en el certificado
+     * @param string $xml contenido del archivo xml
      *
      * @throws Exception
      */
     public function sign(string $cert_store, string $password, string $xml): string|Exception
     {
-        if (! openssl_pkcs12_read($cert_store, $certs, $password)) {
+        if (!openssl_pkcs12_read($cert_store, $certs, $password)) {
             throw new Exception(openssl_error_string());
         }
-        $pem_file_contents = $certs['cert'].$certs['pkey'];
+        $pem_file_contents = $certs['cert'] . $certs['pkey'];
         $privateKeyStore = new PrivateKeyStore;
         $privateKeyStore->loadFromPem($pem_file_contents, $password);
 

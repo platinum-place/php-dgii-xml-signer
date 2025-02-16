@@ -1,5 +1,7 @@
 <?php
 
+namespace app\Helpers;
+
 use DOMDocument;
 use DOMElement;
 use DOMXpath;
@@ -31,7 +33,7 @@ final class XmlSignerHelper
      * Sign an XML file and save the signature in a new file.
      * This method does not save the public key within the XML file.
      *
-     * @param  string  $data  The XML content to sign
+     * @param string $data The XML content to sign
      * @return string The signed XML content
      *
      * @throws XmlSignerException
@@ -48,7 +50,7 @@ final class XmlSignerHelper
         $xml->loadXML($data);
 
         // Canonicalize the content, exclusive and without comments
-        if (! $xml->documentElement) {
+        if (!$xml->documentElement) {
             throw new XmlSignerException('Undefined document element');
         }
 
@@ -58,8 +60,8 @@ final class XmlSignerHelper
     /**
      * Sign DOM document.
      *
-     * @param  DOMDocument  $document  The document
-     * @param  DOMElement|null  $element  The element of the document to sign
+     * @param DOMDocument $document The document
+     * @param DOMElement|null $element The element of the document to sign
      * @return string The signed XML as string
      */
     public function signDocument(DOMDocument $document, ?DOMElement $element = null): string
@@ -90,8 +92,8 @@ final class XmlSignerHelper
     /**
      * Create the XML representation of the signature.
      *
-     * @param  DOMDocument  $xml  The xml document
-     * @param  string  $digestValue  The digest value
+     * @param DOMDocument $xml The xml document
+     * @param string $digestValue The digest value
      * @return void The DOM document
      *
      * @throws UnexpectedValueException
@@ -104,7 +106,7 @@ final class XmlSignerHelper
         // Append the element to the XML document.
         // We insert the new element as root (child of the document)
 
-        if (! $xml->documentElement) {
+        if (!$xml->documentElement) {
             throw new UnexpectedValueException('Undefined document element');
         }
 
@@ -186,7 +188,7 @@ final class XmlSignerHelper
     /**
      * Create and append an X509Data element containing certificates in base64 format.
      *
-     * @param  OpenSSLCertificate[]  $certificates
+     * @param OpenSSLCertificate[] $certificates
      */
     private function appendX509Certificates(DOMDocument $xml, DOMElement $keyInfoElement, array $certificates): void
     {
@@ -205,7 +207,7 @@ final class XmlSignerHelper
     /**
      * Set reference URI.
      *
-     * @param  string  $referenceUri  The reference URI
+     * @param string $referenceUri The reference URI
      */
     public function setReferenceUri(string $referenceUri): void
     {

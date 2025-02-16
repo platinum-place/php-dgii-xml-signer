@@ -1,54 +1,66 @@
-# Firma Digital de Comprobantes Fiscales Electrónicos (e-CF) en PHP
+<p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400" alt="Laravel Logo"></a></p>
 
-Siguiendo las instrucciones proporcionadas por la Dirección General de Impuestos Internos (DGII) en su documento "[Firmado de e-CF](https://dgii.gov.do/cicloContribuyente/facturacion/comprobantesFiscalesElectronicosE-CF/Documentacin%20sobre%20eCF/Instructivos%20sobre%20Facturaci%C3%B3n%20Electr%C3%B3nica/Firmado%20de%20e-CF.pdf)", es posible realizar la firma digital de los e-CF utilizando diversos lenguajes de programación. En el caso de PHP, la DGII recomienda emplear la biblioteca [xmldsig](https://github.com/selective-php/xmldsig).
+<p align="center">
+<a href="https://github.com/laravel/framework/actions"><img src="https://github.com/laravel/framework/workflows/tests/badge.svg" alt="Build Status"></a>
+<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/dt/laravel/framework" alt="Total Downloads"></a>
+<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/v/laravel/framework" alt="Latest Stable Version"></a>
+<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
+</p>
 
-## Consideraciones Importantes
+## About Laravel
 
-Aunque la documentación oficial es adecuada y cumple con los requisitos establecidos, es necesario destacar lo siguiente:
+Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
 
-### Modificación en la Clase `XmlSigner`
+- [Simple, fast routing engine](https://laravel.com/docs/routing).
+- [Powerful dependency injection container](https://laravel.com/docs/container).
+- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
+- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
+- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
+- [Robust background job processing](https://laravel.com/docs/queues).
+- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
 
-En la clase `XmlSigner`, específicamente en la línea 179, se debe ajustar el método de canonicalización.  
-El código original:
+Laravel is accessible, powerful, and provides tools required for large, robust applications.
 
-```php
-$c14nSignedInfo = $signedInfoElement->C14N(false, false);
-// o simplemente
-$c14nSignedInfo = $signedInfoElement->C14N();
-```
+## Learning Laravel
 
-### Implementación de la Modificación
+Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework.
 
-Para mantener la integridad de la biblioteca original y seguir las recomendaciones sin realizar cambios drásticos:
+You may also try the [Laravel Bootcamp](https://bootcamp.laravel.com), where you will be guided through building a modern Laravel application from scratch.
 
-- Copiar la clase completa `XmlSigner` y crear una nueva clase en otra ubicación dentro de tu proyecto con las modificaciones necesarias.
-- Referenciar esta nueva clase en la segunda clase recomendada por la documentación.
+If you don't feel like reading, [Laracasts](https://laracasts.com) can help. Laracasts contains thousands of video tutorials on a range of topics including Laravel, modern PHP, unit testing, and JavaScript. Boost your skills by digging into our comprehensive video library.
 
-### Recomendación sobre la Versión de PHP y OpenSSL
+## Laravel Sponsors
 
-- El problema ocurre porque OpenSSL 3.0 (utilizado en versiones recientes de PHP) clasifica algunos algoritmos como **"legacy"** y no los habilita por defecto, lo que impide trabajar con archivos `.p12` que usan esos algoritmos.
+We would like to extend our thanks to the following sponsors for funding Laravel development. If you are interested in becoming a sponsor, please visit the [Laravel Partners program](https://partners.laravel.com).
 
-- **Solución 1**: Usa PHP 8.2, que incluye OpenSSL 1.1.1p, donde los algoritmos necesarios están habilitados por defecto.
+### Premium Partners
 
-- **Solución 2**: Si usas OpenSSL 3.0 o superior:
-  1. Modifica el archivo `openssl.cnf` para activar el soporte "legacy". 
-     - En la sección `[provider_sect]`, agrega:
-       ```
-       legacy = legacy_sect
-       ```
-     - En `[legacy_sect]`, asegura que esté:
-       ```
-       activate = 1
-       ```
-  2. Usa el argumento `-legacy` en comandos de OpenSSL:
-     ```bash
-     openssl pkcs12 -in archivo.p12 -legacy -nodes
-     ```
+- **[Vehikl](https://vehikl.com/)**
+- **[Tighten Co.](https://tighten.co)**
+- **[WebReinvent](https://webreinvent.com/)**
+- **[Kirschbaum Development Group](https://kirschbaumdevelopment.com)**
+- **[64 Robots](https://64robots.com)**
+- **[Curotec](https://www.curotec.com/services/technologies/laravel/)**
+- **[Cyber-Duck](https://cyber-duck.co.uk)**
+- **[DevSquad](https://devsquad.com/hire-laravel-developers)**
+- **[Jump24](https://jump24.co.uk)**
+- **[Redberry](https://redberry.international/laravel/)**
+- **[Active Logic](https://activelogic.com)**
+- **[byte5](https://byte5.de)**
+- **[OP.GG](https://op.gg)**
 
-Esto habilita los algoritmos necesarios y soluciona el problema.
+## Contributing
 
-## Referencias
+Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
 
-- [Firmado de e-CF - DGII](https://dgii.gov.do/cicloContribuyente/facturacion/comprobantesFiscalesElectronicosE-CF/Documentacin%20sobre%20eCF/Instructivos%20sobre%20Facturaci%C3%B3n%20Electr%C3%B3nica/Firmado%20de%20e-CF.pdf)
-- [Biblioteca xmldsig para PHP](https://github.com/selective-php/xmldsig)
-- [Habilitar la compatibilidad heredada en OpenSSL](https://www.practicalnetworking.net/practical-tls/openssl-3-and-legacy-providers/).
+## Code of Conduct
+
+In order to ensure that the Laravel community is welcoming to all, please review and abide by the [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
+
+## Security Vulnerabilities
+
+If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
+
+## License
+
+The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
