@@ -1,17 +1,15 @@
 <?php
 
-namespace App\Helpers;
+namespace App\Services\SignManager;
 
+use App\Helpers\Selective\XmlSignerHelper;
 use Exception;
 use Selective\XmlDSig\Algorithm;
 use Selective\XmlDSig\CryptoSigner;
 use Selective\XmlDSig\PrivateKeyStore;
 
-final class SignManagerHelper
+class SignManagerService implements SignManagerInterface
 {
-    /**
-     * @throws Exception
-     */
     public function sign(string $cert_store, string $password, string $xml): string|Exception
     {
         if (!openssl_pkcs12_read($cert_store, $certs, $password)) {
