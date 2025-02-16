@@ -1,10 +1,10 @@
 <?php
 
-namespace app\Helpers;
+namespace App\Helpers;
 
 use DOMDocument;
 use DOMElement;
-use DOMXpath;
+use DOMXPath;
 use OpenSSLCertificate;
 use Selective\XmlDSig\CryptoSignerInterface;
 use Selective\XmlDSig\Exception\XmlSignerException;
@@ -25,7 +25,7 @@ final class XmlSignerHelper
 
     public function __construct(CryptoSignerInterface $cryptoSigner)
     {
-        $this->xmlReader = new XmlReader;
+        $this->xmlReader = new XmlReader();
         $this->cryptoSigner = $cryptoSigner;
     }
 
@@ -34,14 +34,15 @@ final class XmlSignerHelper
      * This method does not save the public key within the XML file.
      *
      * @param string $data The XML content to sign
-     * @return string The signed XML content
      *
      * @throws XmlSignerException
+     *
+     * @return string The signed XML content
      */
     public function signXml(string $data): string
     {
         // Read the xml file content
-        $xml = new DOMDocument;
+        $xml = new DOMDocument();
 
         // Whitespaces must be preserved
         $xml->preserveWhiteSpace = false;
@@ -62,9 +63,10 @@ final class XmlSignerHelper
      *
      * @param DOMDocument $document The document
      * @param DOMElement|null $element The element of the document to sign
+     *
      * @return string The signed XML as string
      */
-    public function signDocument(DOMDocument $document, ?DOMElement $element = null): string
+    public function signDocument(DOMDocument $document, DOMElement $element = null): string
     {
         $element = $element ?? $document->documentElement;
 
@@ -94,9 +96,10 @@ final class XmlSignerHelper
      *
      * @param DOMDocument $xml The xml document
      * @param string $digestValue The digest value
-     * @return void The DOM document
      *
      * @throws UnexpectedValueException
+     *
+     * @return void The DOM document
      */
     private function appendSignature(DOMDocument $xml, string $digestValue): void
     {
@@ -151,23 +154,23 @@ final class XmlSignerHelper
         $keyInfoElement = $xml->createElement('KeyInfo');
         $signatureElement->appendChild($keyInfoElement);
 
-        // $keyValueElement = $xml->createElement('KeyValue');
-        // $keyInfoElement->appendChild($keyValueElement);
-
-        // $rsaKeyValueElement = $xml->createElement('RSAKeyValue');
-        // $keyValueElement->appendChild($rsaKeyValueElement);
-
-        // $modulus = $this->cryptoSigner->getPrivateKeyStore()->getModulus();
-        // if ($modulus) {
-        //     $modulusElement = $xml->createElement('Modulus', $modulus);
-        //     $rsaKeyValueElement->appendChild($modulusElement);
-        // }
-
-        // $publicExponent = $this->cryptoSigner->getPrivateKeyStore()->getPublicExponent();
-        // if ($publicExponent) {
-        //     $exponentElement = $xml->createElement('Exponent', $publicExponent);
-        //     $rsaKeyValueElement->appendChild($exponentElement);
-        // }
+//        $keyValueElement = $xml->createElement('KeyValue');
+//        $keyInfoElement->appendChild($keyValueElement);
+//
+//        $rsaKeyValueElement = $xml->createElement('RSAKeyValue');
+//        $keyValueElement->appendChild($rsaKeyValueElement);
+//
+//        $modulus = $this->cryptoSigner->getPrivateKeyStore()->getModulus();
+//        if ($modulus) {
+//            $modulusElement = $xml->createElement('Modulus', $modulus);
+//            $rsaKeyValueElement->appendChild($modulusElement);
+//        }
+//
+//        $publicExponent = $this->cryptoSigner->getPrivateKeyStore()->getPublicExponent();
+//        if ($publicExponent) {
+//            $exponentElement = $xml->createElement('Exponent', $publicExponent);
+//            $rsaKeyValueElement->appendChild($exponentElement);
+//        }
 
         // If certificates are loaded attach them to the KeyInfo element
         $certificates = $this->cryptoSigner->getPrivateKeyStore()->getCertificates();
@@ -188,14 +191,18 @@ final class XmlSignerHelper
     /**
      * Create and append an X509Data element containing certificates in base64 format.
      *
+     * @param DOMDocument $xml
+     * @param DOMElement $keyInfoElement
      * @param OpenSSLCertificate[] $certificates
+     *
+     * @return void
      */
     private function appendX509Certificates(DOMDocument $xml, DOMElement $keyInfoElement, array $certificates): void
     {
         $x509DataElement = $xml->createElement('X509Data');
         $keyInfoElement->appendChild($x509DataElement);
 
-        $x509Reader = new X509Reader;
+        $x509Reader = new X509Reader();
         foreach ($certificates as $certificateId) {
             $certificate = $x509Reader->toRawBase64($certificateId);
 
@@ -208,6 +215,8 @@ final class XmlSignerHelper
      * Set reference URI.
      *
      * @param string $referenceUri The reference URI
+     *
+     * @return void
      */
     public function setReferenceUri(string $referenceUri): void
     {
