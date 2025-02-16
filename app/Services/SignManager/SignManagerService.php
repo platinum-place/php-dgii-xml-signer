@@ -10,6 +10,9 @@ use Selective\XmlDSig\PrivateKeyStore;
 
 class SignManagerService implements SignManagerInterface
 {
+    /**
+     * @throws Exception
+     */
     public function sign(string $cert_store, string $password, string $xml): string|Exception
     {
         if (!openssl_pkcs12_read($cert_store, $certs, $password)) {
