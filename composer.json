@@ -12,7 +12,8 @@
         "php": "^8.2",
         "laravel/framework": "^11.31",
         "laravel/tinker": "^2.9",
-        "selective/xmldsig": "^3.1"
+        "selective/xmldsig": "^3.1",
+        "ext-openssl": "*"
     },
     "require-dev": {
         "fakerphp/faker": "^1.23",
