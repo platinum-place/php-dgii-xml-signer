@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Services\SignManager\SignManagerInterface;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Storage;
 
 class SignManagerController extends Controller
 {
@@ -20,8 +21,8 @@ class SignManagerController extends Controller
             'xml' => ['required', 'mimes:xml']
         ]);
 
-        $cert_content = file_get_contents(/** Cert path */);
-        $cert_pass = '';
+        $cert_content = Storage::get(/** Cert path */);
+        $cert_pass = config('sign-manager.cert_pass');
         $xml = $request->file('xml')->getContent();
         $signed_xml = $this->signManager->sign($cert_content, $cert_pass, $xml);
 
