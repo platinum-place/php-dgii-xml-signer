@@ -2,4 +2,4 @@
 
 use Illuminate\Support\Facades\Route;
 
-Route::get('sing-manager', \App\Http\Controllers\SignManagerController::class);
+Route::post('sing-manager', \App\Http\Controllers\SignManagerController::class);
