@@ -12,7 +12,7 @@ A continuación, muestro algunos casos:
 Uno de estos casos se encuentra en la parte sobre la siguiente línea de código:
 
 ```php
-$canonicalData = $element->C14N(true, false);lse);
+$canonicalData = $element->C14N(true, false);
 ```
 
 Debería cambiarse a:
@@ -43,7 +43,7 @@ Al intentar leer el archivo .p12 con `openssl_pkcs12_read`, obtenemos un error p
 
 Para solucionarlo, debemos modificar el archivo `openssl.cnf` para que admita el cifrado que necesitamos, cambiando la configuración por defecto al modo "legacy".
 
-## Habilitar cifrado "legacy"
+#### Habilitar cifrado "legacy"
 
 1. Edita el archivo `openssl.cnf` con el siguiente comando:
    ```bash
