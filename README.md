@@ -19,7 +19,7 @@
    XML_NAME=""
    ```
 4. Ejecutar el script:
-   ```env
+   ```bash
    php src/index.php
    ```
    
