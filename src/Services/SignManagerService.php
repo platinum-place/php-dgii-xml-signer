@@ -1,14 +1,14 @@
 <?php
 
-namespace App\Services\SignManager;
+namespace Signer\Services;
 
-use App\Helpers\Selective\XmlSignerHelper;
 use Exception;
 use Selective\XmlDSig\Algorithm;
 use Selective\XmlDSig\CryptoSigner;
 use Selective\XmlDSig\PrivateKeyStore;
+use Signer\Utils\Selective\XmlSigner;
 
-class SignManagerService implements SignManagerInterface
+class SignManagerService
 {
     /**
      * @throws Exception
@@ -25,7 +25,7 @@ class SignManagerService implements SignManagerInterface
         $privateKeyStore->addCertificatesFromX509Pem($pem_file_contents);
         $algorithm = new Algorithm(Algorithm::METHOD_SHA256);
         $cryptoSigner = new CryptoSigner($privateKeyStore, $algorithm);
-        $xmlSigner = new XmlSignerHelper($cryptoSigner);
+        $xmlSigner = new XmlSigner($cryptoSigner);
         $xmlSigner->setReferenceUri('');
 
         return $xmlSigner->signXml($xml);

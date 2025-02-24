@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Helpers\Selective;
+namespace Signer\Utils\Selective;
 
 use DOMDocument;
 use DOMElement;
@@ -15,7 +15,7 @@ use UnexpectedValueException;
 /**
  * Sign XML Documents with Digital Signatures (XMLDSIG).
  */
-final class XmlSignerHelper
+final class XmlSigner
 {
     private string $referenceUri = '';
 
