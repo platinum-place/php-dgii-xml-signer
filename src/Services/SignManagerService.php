@@ -13,7 +13,7 @@ class SignManagerService
     /**
      * @throws Exception
      */
-    public function sign(string $cert_store, string $password, string $xml): string|Exception
+    public function sign(string $cert_store, string $password, string $xml): string
     {
         if (!openssl_pkcs12_read($cert_store, $certs, $password)) {
             throw new Exception(openssl_error_string());
