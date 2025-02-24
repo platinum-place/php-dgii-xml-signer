@@ -9,7 +9,7 @@
   ],
   "license": "MIT",
   "require": {
-    "php": "^8.2",
+    "php": "^8.0",
     "selective/xmldsig": "^3.1",
     "ext-openssl": "*",
     "ext-dom": "*"
