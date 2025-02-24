@@ -112,11 +112,3 @@ Más detalles sobre el error pueden encontrarse en el siguiente enlace de Stack 
 
 Más detalles sobre la documentación de la DGII pueden encontrarse en el siguiente enlace:  
 [Instructivos sobre Facturación Electrónica - Firmado de e-CF](https://dgii.gov.do/cicloContribuyente/facturacion/comprobantesFiscalesElectronicosE-CF/Documentacin%20sobre%20eCF/Instructivos%20sobre%20Facturaci%C3%B3n%20Electr%C3%B3nica/Firmado%20de%20e-CF.pdf)
-
-
-## Agradecimientos
-
-- Framework: [Laravel](https://github.com/laravel/laravel)
-- Librería Firmador: [XMLDSig](https://github.com/selective-php/xmldsig)
-- Traducción Framework: [Laravel Lang](https://github.com/Laravel-Lang/lang)
-
