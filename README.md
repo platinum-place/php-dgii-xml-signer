@@ -1,11 +1,33 @@
 # Firmador XML en PHP para DGII
 
+### Requisitos
+
+- PHP 8.0 en adelante.
+- Composer.
+- Instalar OpenSSL.
+- Habilitar la extensión de OpenSSL en `php.ini` en caso de no tenerla activada.
+- Tener activado el cifrado RC2-40-CBC en OpenSSL.
+
+### Probar
+
+1. Coloca el certificado `.p12` en `storage/certs`.
+2. Coloca el XML a firmar en `storage/xml`.
+3. Definir las variables de entorno `.env`:
+   ```env
+   CERT_NAME=""
+   CERT_PASSWORD=""
+   XML_NAME=""
+   ```
+4. Ejecutar el script:
+   ```env
+   php src/index.php
+   ```
+   
 ## Aclaraciones
 
 Aunque la documentación de la DGII explica cómo utilizar la librería **XMLDSIG** paraleer los certificados, y esta aplicación está basada en esa documentación, destaco que, por lo menos para mí, hay una parte de la documentación que no está del todo clara.
 
 A continuación, muestro algunos casos:
-
 
 ### Caso 1: Cambiar la clase `XmlSigner.php` (o hacer una copia de la misma con los cambios de lugar)
 
@@ -70,36 +92,6 @@ Para solucionarlo, debemos modificar el archivo `openssl.cnf` para que admita el
     ```
    
 5.  Finalmente, guardar los cambios y salir del archivo.
-
-## Requisitos
-
-- PHP 8.2.
-- Composer.
-- Instalar OpenSSL.
-- Habilitar la extensión de OpenSSL en `php.ini` en caso de no tenerla activada.
-- Tener activado el cifrado RC2-40-CBC en OpenSSL.
-
-## Probar la aplicación
-
-1. Agregar la contraseña del certificado en el archivo `.env`:
-   ```bash
-   CERT_PASS="password"
-    ```
-2. Colocar el archivo certificado `.p12` dentro de la carpeta `storage/private/`.
-
-3. Definir la ruta del certificado en el archivo `SignManagerController.php`, en la línea 24.
-
-4. Iniciar el proyecto:
-   ```bash
-   php artisan serve
-    ```
-
-5. Realizar una solicitud `curl` para probar la configuración (ejemplo en Postman en la raíz del proyecto):
-   ```bash
-   curl --location 'http://127.0.0.1:8000/api/sign-manager' \
-   --header 'Accept: application/json' \
-   --form 'xml=@"/path/to/file"'
-     ```
 
 ## Fuentes
 
