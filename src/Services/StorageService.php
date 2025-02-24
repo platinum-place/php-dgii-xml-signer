@@ -12,7 +12,7 @@ class StorageService
      */
     public function getFileContent(string $filePath): string
     {
-        $filePath = __DIR__ . "/../storage/{$filePath}";
+        $filePath = __DIR__ . "/../../storage/{$filePath}";
         if (!file_exists($filePath)) {
             throw new Exception("El archivo no existe: {$filePath}");
         }
