@@ -18,5 +18,4 @@ class StorageService
         }
         return file_get_contents($filePath) ?: throw new Exception("Error al leer: {$filePath}");
     }
-
 }
