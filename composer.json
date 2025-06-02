@@ -1,5 +1,5 @@
 {
-  "name": "platinumplace/php-dgii-signer",
+  "name": "platinumplace/php-dgii-xml-signer",
   "type": "project",
   "description": "Firmador XML para DGII",
   "keywords": [
@@ -9,7 +9,7 @@
   ],
   "license": "MIT",
   "require": {
-    "php": "^8.0",
+    "php": "^8.4",
     "selective/xmldsig": "^3.1",
     "ext-openssl": "*",
     "ext-dom": "*"
@@ -17,11 +17,6 @@
   "autoload": {
     "psr-4": {
       "Signer\\": "src/"
-    }
-  },
-  "autoload-dev": {
-    "psr-4": {
-      "Tests\\": "tests/"
     }
   }
 }

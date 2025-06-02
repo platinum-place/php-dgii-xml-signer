@@ -1,6 +1,6 @@
 <?php
 
-namespace Signer\Utils\Selective;
+namespace Signer;
 
 use DOMDocument;
 use DOMElement;
@@ -25,7 +25,7 @@ final class XmlSigner
 
     public function __construct(CryptoSignerInterface $cryptoSigner)
     {
-        $this->xmlReader = new XmlReader();
+        $this->xmlReader = new XmlReader;
         $this->cryptoSigner = $cryptoSigner;
     }
 
@@ -33,16 +33,15 @@ final class XmlSigner
      * Sign an XML file and save the signature in a new file.
      * This method does not save the public key within the XML file.
      *
-     * @param string $data The XML content to sign
+     * @param  string  $data  The XML content to sign
+     * @return string The signed XML content
      *
      * @throws XmlSignerException
-     *
-     * @return string The signed XML content
      */
     public function signXml(string $data): string
     {
         // Read the xml file content
-        $xml = new DOMDocument();
+        $xml = new DOMDocument;
 
         // Whitespaces must be preserved
         $xml->preserveWhiteSpace = false;
@@ -51,7 +50,7 @@ final class XmlSigner
         $xml->loadXML($data);
 
         // Canonicalize the content, exclusive and without comments
-        if (!$xml->documentElement) {
+        if (! $xml->documentElement) {
             throw new XmlSignerException('Undefined document element');
         }
 
@@ -61,12 +60,11 @@ final class XmlSigner
     /**
      * Sign DOM document.
      *
-     * @param DOMDocument $document The document
-     * @param DOMElement|null $element The element of the document to sign
-     *
+     * @param  DOMDocument  $document  The document
+     * @param  DOMElement|null  $element  The element of the document to sign
      * @return string The signed XML as string
      */
-    public function signDocument(DOMDocument $document, DOMElement $element = null): string
+    public function signDocument(DOMDocument $document, ?DOMElement $element = null): string
     {
         $element = $element ?? $document->documentElement;
 
@@ -94,12 +92,11 @@ final class XmlSigner
     /**
      * Create the XML representation of the signature.
      *
-     * @param DOMDocument $xml The xml document
-     * @param string $digestValue The digest value
+     * @param  DOMDocument  $xml  The xml document
+     * @param  string  $digestValue  The digest value
+     * @return void The DOM document
      *
      * @throws UnexpectedValueException
-     *
-     * @return void The DOM document
      */
     private function appendSignature(DOMDocument $xml, string $digestValue): void
     {
@@ -109,7 +106,7 @@ final class XmlSigner
         // Append the element to the XML document.
         // We insert the new element as root (child of the document)
 
-        if (!$xml->documentElement) {
+        if (! $xml->documentElement) {
             throw new UnexpectedValueException('Undefined document element');
         }
 
@@ -154,23 +151,23 @@ final class XmlSigner
         $keyInfoElement = $xml->createElement('KeyInfo');
         $signatureElement->appendChild($keyInfoElement);
 
-//        $keyValueElement = $xml->createElement('KeyValue');
-//        $keyInfoElement->appendChild($keyValueElement);
-//
-//        $rsaKeyValueElement = $xml->createElement('RSAKeyValue');
-//        $keyValueElement->appendChild($rsaKeyValueElement);
-//
-//        $modulus = $this->cryptoSigner->getPrivateKeyStore()->getModulus();
-//        if ($modulus) {
-//            $modulusElement = $xml->createElement('Modulus', $modulus);
-//            $rsaKeyValueElement->appendChild($modulusElement);
-//        }
-//
-//        $publicExponent = $this->cryptoSigner->getPrivateKeyStore()->getPublicExponent();
-//        if ($publicExponent) {
-//            $exponentElement = $xml->createElement('Exponent', $publicExponent);
-//            $rsaKeyValueElement->appendChild($exponentElement);
-//        }
+        //        $keyValueElement = $xml->createElement('KeyValue');
+        //        $keyInfoElement->appendChild($keyValueElement);
+        //
+        //        $rsaKeyValueElement = $xml->createElement('RSAKeyValue');
+        //        $keyValueElement->appendChild($rsaKeyValueElement);
+        //
+        //        $modulus = $this->cryptoSigner->getPrivateKeyStore()->getModulus();
+        //        if ($modulus) {
+        //            $modulusElement = $xml->createElement('Modulus', $modulus);
+        //            $rsaKeyValueElement->appendChild($modulusElement);
+        //        }
+        //
+        //        $publicExponent = $this->cryptoSigner->getPrivateKeyStore()->getPublicExponent();
+        //        if ($publicExponent) {
+        //            $exponentElement = $xml->createElement('Exponent', $publicExponent);
+        //            $rsaKeyValueElement->appendChild($exponentElement);
+        //        }
 
         // If certificates are loaded attach them to the KeyInfo element
         $certificates = $this->cryptoSigner->getPrivateKeyStore()->getCertificates();
@@ -191,18 +188,14 @@ final class XmlSigner
     /**
      * Create and append an X509Data element containing certificates in base64 format.
      *
-     * @param DOMDocument $xml
-     * @param DOMElement $keyInfoElement
-     * @param OpenSSLCertificate[] $certificates
-     *
-     * @return void
+     * @param  OpenSSLCertificate[]  $certificates
      */
     private function appendX509Certificates(DOMDocument $xml, DOMElement $keyInfoElement, array $certificates): void
     {
         $x509DataElement = $xml->createElement('X509Data');
         $keyInfoElement->appendChild($x509DataElement);
 
-        $x509Reader = new X509Reader();
+        $x509Reader = new X509Reader;
         foreach ($certificates as $certificateId) {
             $certificate = $x509Reader->toRawBase64($certificateId);
 
@@ -214,9 +207,7 @@ final class XmlSigner
     /**
      * Set reference URI.
      *
-     * @param string $referenceUri The reference URI
-     *
-     * @return void
+     * @param  string  $referenceUri  The reference URI
      */
     public function setReferenceUri(string $referenceUri): void
     {
