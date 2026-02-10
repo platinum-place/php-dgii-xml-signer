@@ -14,31 +14,29 @@ Probado en las versiones de php 8.1.12 y 8.1.13
 /*
 Nota:
 **Refactorizaciones al archivo XmlSigner.php
-al instanciar la clase DOMDocument coloque la propiedad preserveWhiteSpace a false debido a
+al instanciar la clase DOMDocument coloque la propiedad preserveWhiteSpace a false debido a 
 que los espacios en blanco no deben ser preservados
-Existe otra función que recibe un DOMDocument recuerde ajustar este valor antes de enviar el
+Existe otra función que recibe un DOMDocument recuerde ajustar este valor antes de enviar el 
 objeto.
- $xml->preserveWhiteSpace = true; cambiar a $xml->preserveWhiteSpace = false;
+ $xml->preserveWhiteSpace = true;  cambiar a   $xml->preserveWhiteSpace = false;
  **Por otro lado
- $canonicalData = $element->C14N(true, false); cambiar a $canonicalData =
+ $canonicalData = $element->C14N(true, false); cambiar a $canonicalData = 
 $element->C14N(false, false);
- puede dejarlos sin parámetros puesto que sus valores por defecto son false, es decir puede ser
+ puede dejarlos sin parámetros puesto que sus valores por defecto son false, es decir puede ser 
 => $canonicalData = $element->C14N()
- **En la función appendSignature puede comentar las líneas 154 hasta la 170, los tag KeyValue,
+ **En la función appendSignature puede comentar las líneas 154 hasta la 170, los tag KeyValue, 
 RSAKeyValue, Exponent no son necesarios
- **Recuerde habilitar la extensión openssl en su archivo php.ini, en algunas distribuciones esta
+ **Recuerde habilitar la extensión openssl en su archivo php.ini, en algunas distribuciones esta 
 deshabilitado por defecto.
 */
-
 final class SignManager
 {
     /**
      * The constructor.
      *
-     * @param  string  $cert_store  contenido del archivo p12
-     * @param  string  $password  contraseña para acceder a la información contenida en el
-     *                            certificado
-     * @param  string  $xml  contenido del archivo xml
+     * @param string $cert_store contenido del archivo p12
+     * @param string $password contraseña para acceder a la información contenida en el certificado
+     * @param string $xml contenido del archivo xml
      */
     public function sing(string $cert_store, string $password, string $xml): string
     {
@@ -66,14 +64,5 @@ final class SignManager
         $signedXml = $xmlSigner->signXml($xml);
 
         return $signedXml;
-    }
-
-    public function verifyP12(string $cert_store, string $password): bool
-    {
-        try {
-            return openssl_pkcs12_read($cert_store, $certs, $password) !== false;
-        } catch (\Exception $e) {
-            return false;
-        }
     }
 }
