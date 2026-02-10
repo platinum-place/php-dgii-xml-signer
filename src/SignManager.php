@@ -1,6 +1,6 @@
 <?php
 
-namespace Signer;
+namespace PlatinumPlace\DgiiXmlSigner;
 
 use Selective\XmlDSig\Algorithm;
 use Selective\XmlDSig\CryptoSigner;

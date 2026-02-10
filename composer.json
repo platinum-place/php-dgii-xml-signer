@@ -1,22 +1,42 @@
 {
-  "name": "platinumplace/php-dgii-xml-signer",
-  "type": "project",
+  "name": "platinum-place/php-dgii-xml-signer",
+  "type": "library",
   "description": "Firmador XML para DGII",
   "keywords": [
     "DGII",
     "PHP",
-    "XML"
+    "XML",
+    "e-CF",
+    "signature",
+    "xmldsig",
+    "dominican-republic"
   ],
   "license": "MIT",
   "require": {
-    "php": "^8.4",
-    "selective/xmldsig": "^3.1",
+    "php": "^8.1",
+    "ext-dom": "*",
     "ext-openssl": "*",
-    "ext-dom": "*"
+    "selective/xmldsig": "^3.1"
+  },
+  "require-dev": {
+    "phpunit/phpunit": "^10.0|^11.0"
   },
   "autoload": {
     "psr-4": {
-      "Signer\\": "src/"
+      "PlatinumPlace\\DgiiXmlSigner\\": "src/"
     }
-  }
+  },
+  "autoload-dev": {
+    "psr-4": {
+      "PlatinumPlace\\DgiiXmlSigner\\Tests\\": "tests/"
+    }
+  },
+  "scripts": {
+    "test": "phpunit"
+  },
+  "config": {
+    "sort-packages": true
+  },
+  "minimum-stability": "stable",
+  "prefer-stable": true
 }

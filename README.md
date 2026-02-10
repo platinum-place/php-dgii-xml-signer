@@ -17,7 +17,7 @@ Este paquete proporciona las herramientas necesarias para firmar digitalmente do
 
 ## Requisitos
 
-- PHP 8.0 o superior
+- PHP 8.1 o superior
 - Extensión OpenSSL habilitada
 - Extensión XMLWriter habilitada
 - Extensión DOMDocument habilitada
@@ -113,7 +113,7 @@ composer install
 
 ```php
 <?php
-use PlatinumPlace\Signer\SignManager;
+use PlatinumPlace\DgiiXmlSigner\SignManager;
 
 $xmlDocument = '<?xml version="1.0" encoding="UTF-8"?>
 <ECF xmlns="http://dgii.gov.do/e-CF/v1.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
@@ -152,10 +152,10 @@ $xmlDocument = '<?xml version="1.0" encoding="UTF-8"?>
 </ECF>';
 
 try {
-    $certContent = '/content/certificate.p12');
+    $certContent = file_get_contents('/path/to/certificate.p12');
     $certPassword = 'password';
 
-    $signedXML = (new SignManager)->sing($certContent, $certPassword, $xmlContent);
+    $signedXML = (new SignManager)->sign($certContent, $certPassword, $xmlDocument);
     
 } catch (Exception $e) {
     echo "Error procesando e-CF: " . $e->getMessage() . "\n";

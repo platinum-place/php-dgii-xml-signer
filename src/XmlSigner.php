@@ -1,6 +1,6 @@
 <?php
 
-namespace Signer;
+namespace PlatinumPlace\DgiiXmlSigner;
 
 use DOMDocument;
 use DOMElement;
