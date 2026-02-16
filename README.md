@@ -25,7 +25,7 @@ Este paquete proporciona las herramientas necesarias para firmar digitalmente do
 
 ## Aclaraciones
 
-Aunque la documentación de la DGII explica cómo utilizar la librería **XMLDSIG** paraleer los certificados, y esta aplicación está basada en esa documentación, destaco que, por lo menos para mí, hay una parte de la documentación que no está del todo clara.
+Aunque la documentación de la DGII explica cómo utilizar la librería **XMLDSIG** para leer los certificados, y esta aplicación está basada en esa documentación, destaco que, por lo menos para mí, hay una parte de la documentación que no está del todo clara.
 
 A continuación, muestro algunos casos:
 
