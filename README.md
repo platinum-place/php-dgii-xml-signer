@@ -59,9 +59,7 @@ Este cambio debe realizarse específicamente en la línea 179 del archivo origin
 
 ### Caso 2: Error al leer el certificado
 
-La documentación menciona que la librería fue probada en PHP versiones 8.1.12 y 8.1.13, debido a que el cifrado RC2-40-CBC utilizado en los archivos .p12 cambió en las versiones más recientes de OpenSSL, que normalmente vienen con PHP 8.2 en adelante.
-
-Al intentar leer el archivo .p12 con `openssl_pkcs12_read`, obtenemos un error porque OpenSSL dejó de admitir el cifrado RC2-40-CBC en versiones recientes debido a problemas de seguridad. Sin embargo, este cifrado aún es utilizado por la DGII en los certificados emitidos por entidades certificadas, como la Cámara de Comercio.
+La documentación menciona que la librería fue probada en PHP versiones 8.1.12 y 8.1.13, si utilizas el paquete en una version mas reciente, como 8.4 o 8.5, la validación falla debido a que el cifrado RC2-40-CBC utilizado en los archivos .p12 cambió en las versiones más recientes de OpenSSL, que normalmente vienen con PHP 8.2 en adelante.
 
 Para solucionarlo, debemos modificar el archivo `openssl.cnf` para que admita el cifrado que necesitamos, cambiando la configuración por defecto al modo "legacy".
 
