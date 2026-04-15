@@ -16,14 +16,27 @@ use UnexpectedValueException;
  * Personalización del firmador XMLDSIG para cumplir con los requerimientos específicos de la DGII.
  *
  * Implementa las variaciones en la normalización C14N (Canonicalización) 
- * requeridas para el sistema de facturación electrónica de la República Dominicana.
+ * requeridas para el sistema de facturación electrónica de la República Dominicana,
+ * asegurando la compatibilidad con el validador oficial de la DGII.
+ * 
+ * @package PlatinumPlace\DgiiXmlSigner
  */
 final class XmlSigner
 {
+    /** @var string URI de referencia para la firma (vacío por defecto para referenciar todo el documento) */
     private string $referenceUri = '';
+
+    /** @var XmlReader Lector de XML de la librería base selective/xmldsig */
     private XmlReader $xmlReader;
+
+    /** @var CryptoSignerInterface Instancia encargada de las operaciones criptográficas */
     private CryptoSignerInterface $cryptoSigner;
 
+    /**
+     * Inicializa el firmador con el motor criptográfico configurado.
+     * 
+     * @param CryptoSignerInterface $cryptoSigner Instancia que contiene las claves y algoritmos de firma
+     */
     public function __construct(CryptoSignerInterface $cryptoSigner)
     {
         $this->xmlReader = new XmlReader();
@@ -31,17 +44,17 @@ final class XmlSigner
     }
 
     /**
-     * Firma el contenido XML y lo devuelve como string.
+     * Firma el contenido XML en string y lo devuelve como string firmado.
      *
-     * @param string $data El contenido XML original
-     * @return string El XML firmado
-     * @throws XmlSignerException Si el XML es inválido o el proceso falla
+     * @param string $data El contenido XML original que se desea procesar
+     * @return string El XML firmado (con el bloque <Signature> inyectado)
+     * @throws XmlSignerException Si el XML proporcionado es inválido o el proceso de firma falla
      */
     public function signXml(string $data): string
     {
         $xml = new DOMDocument();
 
-        // Configuración requerida por DGII para evitar espacios innecesarios
+        // Configuración requerida por la DGII para evitar alteraciones en el digest debido a indentación
         $xml->preserveWhiteSpace = false;
         $xml->formatOutput = false;
 
@@ -57,12 +70,12 @@ final class XmlSigner
     }
 
     /**
-     * Firma un objeto DOMDocument.
+     * Firma un objeto DOMDocument de forma directa.
      *
-     * @param DOMDocument $document
-     * @param DOMElement|null $element Elemento específico a firmar (por defecto la raíz)
-     * @return string XML resultante
-     * @throws XmlSignerException
+     * @param DOMDocument $document Documento DOM cargado
+     * @param DOMElement|null $element Elemento específico a firmar (si es null, firma la raíz)
+     * @return string El XML resultante en formato string
+     * @throws XmlSignerException Si el elemento raíz es nulo o hay fallos en la canonicalización
      */
     public function signDocument(DOMDocument $document, ?DOMElement $element = null): string
     {
@@ -72,7 +85,11 @@ final class XmlSigner
             throw new XmlSignerException('Elemento XML no válido para el proceso de firma.');
         }
 
-        // Cambio crítico para DGII: Normalización exclusiva sin parámetros (false, false por defecto)
+        /** 
+         * Cambio técnico específico para DGII: 
+         * Se realiza la normalización exclusiva (C14N) sin parámetros explícitos 
+         * para garantizar que los namespaces se traten según el requerimiento dominicano.
+         */
         $canonicalData = $element->C14N();
 
         $digestValue = $this->cryptoSigner->computeDigest($canonicalData);
@@ -90,9 +107,11 @@ final class XmlSigner
     }
 
     /**
-     * Inserta la estructura <Signature> en el XML.
+     * Inserta la estructura <Signature> requerida por el estándar XMLDSig.
      *
-     * @throws UnexpectedValueException
+     * @param DOMDocument $xml Documento donde se inyectará la firma
+     * @param string $digestValue Valor hash (digest) calculado para el elemento referenciado
+     * @throws UnexpectedValueException Si el documento no tiene un elemento raíz válido
      */
     private function appendSignature(DOMDocument $xml, string $digestValue): void
     {
@@ -142,13 +161,17 @@ final class XmlSigner
         $keyInfoElement = $xml->createElement('KeyInfo');
         $signatureElement->appendChild($keyInfoElement);
 
-        // Los certificados se añaden al KeyInfo si están presentes
+        // Los certificados se añaden al KeyInfo si están configurados en el almacén de claves
         $certificates = $this->cryptoSigner->getPrivateKeyStore()->getCertificates();
         if ($certificates) {
             $this->appendX509Certificates($xml, $keyInfoElement, $certificates);
         }
 
-        // Segundo cambio crítico para DGII: C14N() sin parámetros en SignedInfo
+        /** 
+         * Segundo cambio técnico crítico para DGII: 
+         * Normalización C14N() sin parámetros en el bloque SignedInfo 
+         * antes de calcular el SignatureValue.
+         */
         $c14nSignedInfo = $signedInfoElement->C14N();
 
         $signatureValue = $this->cryptoSigner->computeSignature($c14nSignedInfo);
@@ -159,9 +182,11 @@ final class XmlSigner
     }
 
     /**
-     * Crea y añade el elemento X509Data con los certificados en base64.
+     * Crea y añade el elemento X509Data con los certificados en formato base64.
      *
-     * @param OpenSSLCertificate[] $certificates
+     * @param DOMDocument $xml Documento XML
+     * @param DOMElement $keyInfoElement Nodo <KeyInfo> donde se insertará la información
+     * @param OpenSSLCertificate[] $certificates Lista de certificados a incrustar
      */
     private function appendX509Certificates(DOMDocument $xml, DOMElement $keyInfoElement, array $certificates): void
     {
@@ -177,8 +202,17 @@ final class XmlSigner
         }
     }
 
+    /**
+     * Establece el URI de referencia para el bloque <Reference>.
+     * 
+     * Por defecto se utiliza un string vacío para referenciar a todo el documento.
+     * 
+     * @param string $referenceUri El identificador de referencia (ej. "#id_del_elemento")
+     * @return void
+     */
     public function setReferenceUri(string $referenceUri): void
     {
         $this->referenceUri = $referenceUri;
     }
 }
+

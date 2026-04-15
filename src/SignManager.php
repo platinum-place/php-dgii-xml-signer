@@ -9,17 +9,23 @@ use Selective\XmlDSig\PrivateKeyStore;
 
 /**
  * Manager para gestionar el firmado de XML conforme a los requerimientos de la DGII.
- * Basado en las guías oficiales para e-CF en República Dominicana.
+ * 
+ * Esta clase actúa como el punto de entrada principal para realizar el firmado digital
+ * de comprobantes fiscales electrónicos (e-CF) siguiendo el estándar XMLDSig y las
+ * especificaciones técnicas de la República Dominicana.
+ * 
+ * @package PlatinumPlace\DgiiXmlSigner
  */
 final class SignManager
 {
     /**
-     * Alias del método sing() para mayor claridad.
+     * Alias del método sing() para mayor claridad y cumplimiento de estándares PSR.
      * 
-     * @param string $cert_store Contenido del archivo .p12
-     * @param string $password Contraseña del certificado
-     * @param string $xml Contenido XML a firmar
-     * @return string XML firmado
+     * @param string $cert_store Contenido binario del archivo de certificado (.p12)
+     * @param string $password Contraseña del certificado para su lectura
+     * @param string $xml Contenido del XML que se desea firmar
+     * @return string El XML resultante con la firma digital incrustada
+     * @throws DgiiXmlSignerException Si ocurre un error durante el proceso de firma
      */
     public function sign(string $cert_store, string $password, string $xml): string
     {
@@ -27,13 +33,14 @@ final class SignManager
     }
 
     /**
-     * Firma el XML siguiendo la nomenclatura sugerida por la DGII.
+     * Firma el XML siguiendo la nomenclatura sugerida por la documentación de la DGII.
      *
-     * @param string $cert_store Contenido del archivo .p12
-     * @param string $password Contraseña para acceder al certificado
-     * @param string $xml Contenido del archivo XML
-     * @return string XML firmado
-     * @throws DgiiXmlSignerException Si el certificado no es válido o hay un error en el proceso
+     * @param string $cert_store Contenido binario del archivo de certificado (.p12)
+     * @param string $password Contraseña para acceder a la clave privada del certificado
+     * @param string $xml Contenido del archivo XML a procesar
+     * @return string XML firmado digitalmente
+     * @throws DgiiXmlSignerException Si el certificado no es válido, la contraseña es incorrecta 
+     *                                o hay un error técnico en el proceso de normalización/firma
      */
     public function sing(string $cert_store, string $password, string $xml): string
     {

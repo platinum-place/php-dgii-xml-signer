@@ -20,6 +20,8 @@
     "selective/xmldsig": "^3.1"
   },
   "require-dev": {
+    "friendsofphp/php-cs-fixer": "^3.0",
+    "phpstan/phpstan": "^1.10",
     "phpunit/phpunit": "^10.0|^11.0"
   },
   "autoload": {
@@ -33,7 +35,9 @@
     }
   },
   "scripts": {
-    "test": "phpunit"
+    "test": "vendor/bin/phpunit",
+    "lint": "vendor/bin/php-cs-fixer fix",
+    "analyze": "vendor/bin/phpstan analyze src --level=5"
   },
   "config": {
     "sort-packages": true
