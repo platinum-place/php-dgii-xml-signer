@@ -2,67 +2,57 @@
 
 namespace PlatinumPlace\DgiiXmlSigner;
 
+use PlatinumPlace\DgiiXmlSigner\Exception\DgiiXmlSignerException;
 use Selective\XmlDSig\Algorithm;
 use Selective\XmlDSig\CryptoSigner;
 use Selective\XmlDSig\PrivateKeyStore;
 
-/*
-Descargar la librería XMLDSIG desde https://github.com/selective-php/xmldsig
-Probado en las versiones de php 8.1.12 y 8.1.13
-*/
-
-/*
-Nota:
-**Refactorizaciones al archivo XmlSigner.php
-al instanciar la clase DOMDocument coloque la propiedad preserveWhiteSpace a false debido a 
-que los espacios en blanco no deben ser preservados
-Existe otra función que recibe un DOMDocument recuerde ajustar este valor antes de enviar el 
-objeto.
- $xml->preserveWhiteSpace = true;  cambiar a   $xml->preserveWhiteSpace = false;
- **Por otro lado
- $canonicalData = $element->C14N(true, false); cambiar a $canonicalData = 
-$element->C14N(false, false);
- puede dejarlos sin parámetros puesto que sus valores por defecto son false, es decir puede ser 
-=> $canonicalData = $element->C14N()
- **En la función appendSignature puede comentar las líneas 154 hasta la 170, los tag KeyValue, 
-RSAKeyValue, Exponent no son necesarios
- **Recuerde habilitar la extensión openssl en su archivo php.ini, en algunas distribuciones esta 
-deshabilitado por defecto.
-*/
+/**
+ * Manager para gestionar el firmado de XML conforme a los requerimientos de la DGII.
+ * Basado en las guías oficiales para e-CF en República Dominicana.
+ */
 final class SignManager
 {
     /**
-     * The constructor.
+     * Alias del método sing() para mayor claridad.
+     * 
+     * @param string $cert_store Contenido del archivo .p12
+     * @param string $password Contraseña del certificado
+     * @param string $xml Contenido XML a firmar
+     * @return string XML firmado
+     */
+    public function sign(string $cert_store, string $password, string $xml): string
+    {
+        return $this->sing($cert_store, $password, $xml);
+    }
+
+    /**
+     * Firma el XML siguiendo la nomenclatura sugerida por la DGII.
      *
-     * @param string $cert_store contenido del archivo p12
-     * @param string $password contraseña para acceder a la información contenida en el certificado
-     * @param string $xml contenido del archivo xml
+     * @param string $cert_store Contenido del archivo .p12
+     * @param string $password Contraseña para acceder al certificado
+     * @param string $xml Contenido del archivo XML
+     * @return string XML firmado
+     * @throws DgiiXmlSignerException Si el certificado no es válido o hay un error en el proceso
      */
     public function sing(string $cert_store, string $password, string $xml): string
     {
-        if (! openssl_pkcs12_read($cert_store, $certs, $password)) {
-
-            echo "Error: No fue posible leer el contenido del certificado.\n";
-            exit;
+        if (!openssl_pkcs12_read($cert_store, $certs, $password)) {
+            throw new DgiiXmlSignerException("Error: No fue posible leer el contenido del certificado. Verifique la contraseña o la configuración 'legacy' de OpenSSL.");
         }
-        $pem_file_contents = $certs['cert'].$certs['pkey'];
 
-        $privateKeyStore = new PrivateKeyStore;
+        $pem_file_contents = $certs['cert'] . $certs['pkey'];
 
+        $privateKeyStore = new PrivateKeyStore();
         $privateKeyStore->loadFromPem($pem_file_contents, $password);
-
         $privateKeyStore->addCertificatesFromX509Pem($pem_file_contents);
 
         $algorithm = new Algorithm(Algorithm::METHOD_SHA256);
-
         $cryptoSigner = new CryptoSigner($privateKeyStore, $algorithm);
 
         $xmlSigner = new XmlSigner($cryptoSigner);
-
         $xmlSigner->setReferenceUri('');
 
-        $signedXml = $xmlSigner->signXml($xml);
-
-        return $signedXml;
+        return $xmlSigner->signXml($xml);
     }
 }

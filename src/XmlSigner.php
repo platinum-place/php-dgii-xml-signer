@@ -13,103 +13,95 @@ use Selective\XmlDSig\XmlReader;
 use UnexpectedValueException;
 
 /**
- * Sign XML Documents with Digital Signatures (XMLDSIG).
+ * Personalización del firmador XMLDSIG para cumplir con los requerimientos específicos de la DGII.
+ *
+ * Implementa las variaciones en la normalización C14N (Canonicalización) 
+ * requeridas para el sistema de facturación electrónica de la República Dominicana.
  */
 final class XmlSigner
 {
     private string $referenceUri = '';
-
     private XmlReader $xmlReader;
-
     private CryptoSignerInterface $cryptoSigner;
 
     public function __construct(CryptoSignerInterface $cryptoSigner)
     {
-        $this->xmlReader = new XmlReader;
+        $this->xmlReader = new XmlReader();
         $this->cryptoSigner = $cryptoSigner;
     }
 
     /**
-     * Sign an XML file and save the signature in a new file.
-     * This method does not save the public key within the XML file.
+     * Firma el contenido XML y lo devuelve como string.
      *
-     * @param  string  $data  The XML content to sign
-     * @return string The signed XML content
-     *
-     * @throws XmlSignerException
+     * @param string $data El contenido XML original
+     * @return string El XML firmado
+     * @throws XmlSignerException Si el XML es inválido o el proceso falla
      */
     public function signXml(string $data): string
     {
-        // Read the xml file content
-        $xml = new DOMDocument;
+        $xml = new DOMDocument();
 
-        // Whitespaces must be preserved
+        // Configuración requerida por DGII para evitar espacios innecesarios
         $xml->preserveWhiteSpace = false;
         $xml->formatOutput = false;
 
-        $xml->loadXML($data);
+        if (!$xml->loadXML($data)) {
+            throw new XmlSignerException('No se pudo cargar el XML proporcionado.');
+        }
 
-        // Canonicalize the content, exclusive and without comments
-        if (! $xml->documentElement) {
-            throw new XmlSignerException('Undefined document element');
+        if (!$xml->documentElement) {
+            throw new XmlSignerException('El documento XML no tiene un elemento raíz definido.');
         }
 
         return $this->signDocument($xml);
     }
 
     /**
-     * Sign DOM document.
+     * Firma un objeto DOMDocument.
      *
-     * @param  DOMDocument  $document  The document
-     * @param  DOMElement|null  $element  The element of the document to sign
-     * @return string The signed XML as string
+     * @param DOMDocument $document
+     * @param DOMElement|null $element Elemento específico a firmar (por defecto la raíz)
+     * @return string XML resultante
+     * @throws XmlSignerException
      */
     public function signDocument(DOMDocument $document, ?DOMElement $element = null): string
     {
         $element = $element ?? $document->documentElement;
 
         if ($element === null) {
-            throw new XmlSignerException('Invalid XML document element');
+            throw new XmlSignerException('Elemento XML no válido para el proceso de firma.');
         }
 
+        // Cambio crítico para DGII: Normalización exclusiva sin parámetros (false, false por defecto)
         $canonicalData = $element->C14N();
 
-        // Calculate and encode digest value
         $digestValue = $this->cryptoSigner->computeDigest($canonicalData);
+        $digestValueEncoded = base64_encode($digestValue);
 
-        $digestValue = base64_encode($digestValue);
-        $this->appendSignature($document, $digestValue);
+        $this->appendSignature($document, $digestValueEncoded);
 
         $result = $document->saveXML();
 
         if ($result === false) {
-            throw new XmlSignerException('Signing failed. Invalid XML.');
+            throw new XmlSignerException('Error al guardar el XML firmado.');
         }
 
         return $result;
     }
 
     /**
-     * Create the XML representation of the signature.
-     *
-     * @param  DOMDocument  $xml  The xml document
-     * @param  string  $digestValue  The digest value
-     * @return void The DOM document
+     * Inserta la estructura <Signature> en el XML.
      *
      * @throws UnexpectedValueException
      */
     private function appendSignature(DOMDocument $xml, string $digestValue): void
     {
-        $signatureElement = $xml->createElement('Signature');
-        $signatureElement->setAttribute('xmlns', 'http://www.w3.org/2000/09/xmldsig#');
-
-        // Append the element to the XML document.
-        // We insert the new element as root (child of the document)
-
-        if (! $xml->documentElement) {
-            throw new UnexpectedValueException('Undefined document element');
+        if (!$xml->documentElement) {
+            throw new UnexpectedValueException('Elemento raíz no definido.');
         }
 
+        $signatureElement = $xml->createElement('Signature');
+        $signatureElement->setAttribute('xmlns', 'http://www.w3.org/2000/09/xmldsig#');
         $xml->documentElement->appendChild($signatureElement);
 
         $signedInfoElement = $xml->createElement('SignedInfo');
@@ -133,7 +125,6 @@ final class XmlSigner
         $transformsElement = $xml->createElement('Transforms');
         $referenceElement->appendChild($transformsElement);
 
-        // Enveloped: the <Signature> node is inside the XML we want to sign
         $transformElement = $xml->createElement('Transform');
         $transformElement->setAttribute('Algorithm', 'http://www.w3.org/2000/09/xmldsig#enveloped-signature');
         $transformsElement->appendChild($transformElement);
@@ -151,51 +142,33 @@ final class XmlSigner
         $keyInfoElement = $xml->createElement('KeyInfo');
         $signatureElement->appendChild($keyInfoElement);
 
-        //        $keyValueElement = $xml->createElement('KeyValue');
-        //        $keyInfoElement->appendChild($keyValueElement);
-        //
-        //        $rsaKeyValueElement = $xml->createElement('RSAKeyValue');
-        //        $keyValueElement->appendChild($rsaKeyValueElement);
-        //
-        //        $modulus = $this->cryptoSigner->getPrivateKeyStore()->getModulus();
-        //        if ($modulus) {
-        //            $modulusElement = $xml->createElement('Modulus', $modulus);
-        //            $rsaKeyValueElement->appendChild($modulusElement);
-        //        }
-        //
-        //        $publicExponent = $this->cryptoSigner->getPrivateKeyStore()->getPublicExponent();
-        //        if ($publicExponent) {
-        //            $exponentElement = $xml->createElement('Exponent', $publicExponent);
-        //            $rsaKeyValueElement->appendChild($exponentElement);
-        //        }
-
-        // If certificates are loaded attach them to the KeyInfo element
+        // Los certificados se añaden al KeyInfo si están presentes
         $certificates = $this->cryptoSigner->getPrivateKeyStore()->getCertificates();
         if ($certificates) {
             $this->appendX509Certificates($xml, $keyInfoElement, $certificates);
         }
 
-        // http://www.soapclient.com/XMLCanon.html
+        // Segundo cambio crítico para DGII: C14N() sin parámetros en SignedInfo
         $c14nSignedInfo = $signedInfoElement->C14N();
 
         $signatureValue = $this->cryptoSigner->computeSignature($c14nSignedInfo);
 
-        $xpath = new DOMXpath($xml);
+        $xpath = new DOMXPath($xml);
         $signatureValueElement = $this->xmlReader->queryDomNode($xpath, '//SignatureValue', $signatureElement);
         $signatureValueElement->nodeValue = base64_encode($signatureValue);
     }
 
     /**
-     * Create and append an X509Data element containing certificates in base64 format.
+     * Crea y añade el elemento X509Data con los certificados en base64.
      *
-     * @param  OpenSSLCertificate[]  $certificates
+     * @param OpenSSLCertificate[] $certificates
      */
     private function appendX509Certificates(DOMDocument $xml, DOMElement $keyInfoElement, array $certificates): void
     {
         $x509DataElement = $xml->createElement('X509Data');
         $keyInfoElement->appendChild($x509DataElement);
 
-        $x509Reader = new X509Reader;
+        $x509Reader = new X509Reader();
         foreach ($certificates as $certificateId) {
             $certificate = $x509Reader->toRawBase64($certificateId);
 
@@ -204,11 +177,6 @@ final class XmlSigner
         }
     }
 
-    /**
-     * Set reference URI.
-     *
-     * @param  string  $referenceUri  The reference URI
-     */
     public function setReferenceUri(string $referenceUri): void
     {
         $this->referenceUri = $referenceUri;

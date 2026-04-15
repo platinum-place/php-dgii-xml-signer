@@ -3,4 +3,5 @@
 /.vscode
 .env
 composer.lock
-.phpunit.cache
+.phpunit.cache\n# Certificados y datos de prueba\ntests/Fixtures/*.p12\ntests/Fixtures/*.xml\n!tests/Fixtures/documento_prueba.xml
+.phpunit.cache/
