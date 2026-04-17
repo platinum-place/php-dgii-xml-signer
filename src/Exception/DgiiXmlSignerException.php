@@ -5,12 +5,10 @@ namespace PlatinumPlace\DgiiXmlSigner\Exception;
 use RuntimeException;
 
 /**
- * Excepción base para errores durante el proceso de firmado de documentos para la DGII.
- * 
- * Se lanza cuando ocurren fallos en la lectura del certificado P12, errores de
- * configuración de OpenSSL, o problemas en la estructura del XML original.
- * 
- * @package PlatinumPlace\DgiiXmlSigner\Exception
+ * Base exception for errors during the DGII document signing process.
+ *
+ * This exception is thrown when failures occur during P12 certificate reading,
+ * OpenSSL configuration errors, or issues with the structure of the original XML.
  */
 class DgiiXmlSignerException extends RuntimeException
 {

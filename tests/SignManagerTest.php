@@ -7,23 +7,21 @@ use PlatinumPlace\DgiiXmlSigner\SignManager;
 use PlatinumPlace\DgiiXmlSigner\Exception\DgiiXmlSignerException;
 
 /**
- * Pruebas unitarias y funcionales para la clase SignManager.
- * 
- * Valida la correcta instanciación, la existencia de alias de métodos y el
- * proceso completo de firmado digital de documentos XML para la DGII.
- * 
- * @package PlatinumPlace\DgiiXmlSigner\Tests
+ * Unit and functional tests for the SignManager class.
+ *
+ * Validates proper instantiation, method alias existence, and the complete
+ * digital signing process for DGII XML documents.
  */
 class SignManagerTest extends TestCase
 {
-    /** @var string Directorio donde se almacenan los archivos de prueba (fixtures) */
+    /** @var string Directory where test fixtures are stored */
     private string $fixturesDir = __DIR__ . '/Fixtures';
 
     /**
-     * Verifica que el SignManager se pueda instanciar correctamente.
-     * 
-     * Asegura que no existan errores de sintaxis o problemas en la carga de dependencias.
-     * 
+     * Verify that SignManager can be instantiated correctly.
+     *
+     * Ensures there are no syntax errors or dependency loading issues.
+     *
      * @return void
      */
     public function test_can_instantiate_sign_manager()
@@ -33,72 +31,72 @@ class SignManagerTest extends TestCase
     }
 
     /**
-     * Verifica la disponibilidad de los métodos 'sign' y 'sing'.
-     * 
-     * El método 'sign' es el estándar moderno, mientras que 'sing' mantiene
-     * la compatibilidad con la documentación técnica oficial de la DGII.
-     * 
+     * Verify the availability of both 'sign' and 'sing' methods.
+     *
+     * The 'sign' method is the modern standard, while 'sing' maintains
+     * compatibility with official DGII technical documentation.
+     *
      * @return void
      */
     public function test_has_sign_alias_for_sing()
     {
         $manager = new SignManager();
-        $this->assertTrue(method_exists($manager, 'sign'), 'El alias sign() debe estar disponible para cumplimiento de estándares.');
-        $this->assertTrue(method_exists($manager, 'sing'), 'El método original sing() debe mantenerse para seguir la documentación de la DGII.');
+        $this->assertTrue(method_exists($manager, 'sign'), 'The sign() alias should be available for standards compliance.');
+        $this->assertTrue(method_exists($manager, 'sing'), 'The original sing() method must be maintained to follow DGII documentation.');
     }
 
     /**
-     * Prueba funcional del proceso de firmado digital.
-     * 
-     * Este test requiere un certificado de prueba real (.p12) en la carpeta de fixtures.
-     * Si no se encuentra el archivo 'test_cert.p12', la prueba se marcará como omitida.
-     * 
+     * Functional test for the digital signing process.
+     *
+     * This test requires a real test certificate (.p12) in the fixtures folder.
+     * If "test_cert.p12" is not found, the test will be marked as skipped.
+     *
      * @return void
      */
     public function test_functional_signature_process()
     {
-        // Ruta genérica para un certificado de prueba configurado por el desarrollador
+        // Generic path for a test certificate configured by the developer
         $certPath = $this->fixturesDir . '/test_cert.p12';
         $xmlPath = $this->fixturesDir . '/documento_prueba.xml';
 
-        // Si faltan los archivos necesarios, saltamos la prueba sin fallar el build
+        // Skip if required files are missing to avoid build failures
         if (!file_exists($certPath) || !file_exists($xmlPath)) {
-            $this->markTestSkipped('Se requiere un certificado "test_cert.p12" en tests/Fixtures para ejecutar el test funcional.');
+            $this->markTestSkipped('A "test_cert.p12" certificate is required in tests/Fixtures to run the functional test.');
         }
 
         $certContent = file_get_contents($certPath);
         $xmlContent = file_get_contents($xmlPath);
-        
-        // Contraseña de prueba (debe coincidir con la del certificado test_cert.p12)
-        $password = 'password_de_prueba'; 
+
+        // Test password (must match the one from test_cert.p12)
+        $password = 'test_password';
 
         $manager = new SignManager();
-        
+
         try {
             $signedXml = $manager->sign($certContent, $password, $xmlContent);
-            
-            // Verificaciones de estructura básica del XMLDSig resultante
-            $this->assertStringContainsString('<Signature', $signedXml, 'El XML generado debe contener la etiqueta <Signature>');
-            $this->assertStringContainsString('http://www.w3.org/2000/09/xmldsig#', $signedXml, 'El namespace de la firma debe ser el estándar oficial.');
+
+            // Verify basic structure of the resulting XMLDSig
+            $this->assertStringContainsString('<Signature', $signedXml, 'The generated XML must contain the <Signature> tag.');
+            $this->assertStringContainsString('http://www.w3.org/2000/09/xmldsig#', $signedXml, 'The signature namespace must be the official standard.');
         } catch (DgiiXmlSignerException $e) {
-            $this->fail('Error inesperado en el proceso de firmado funcional: ' . $e->getMessage());
+            $this->fail('Unexpected error in functional signing process: ' . $e->getMessage());
         }
     }
 
     /**
-     * Valida la gestión de errores ante certificados inválidos.
-     * 
-     * Asegura que el sistema lance una excepción DgiiXmlSignerException
-     * controlada en lugar de errores fatales de la extensión OpenSSL.
-     * 
+     * Validate error handling for invalid certificates.
+     *
+     * Ensures the system throws a controlled DgiiXmlSignerException
+     * instead of fatal errors from the OpenSSL extension.
+     *
      * @return void
      */
     public function test_throws_exception_on_invalid_certificate()
     {
         $this->expectException(DgiiXmlSignerException::class);
-        
+
         $manager = new SignManager();
-        // Simulación de un intento de firma con datos corruptos
+        // Simulate a signing attempt with corrupt data
         $manager->sing('invalid_cert_content', 'wrong_password', '<xml></xml>');
     }
 }
