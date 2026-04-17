@@ -8,24 +8,22 @@ use Selective\XmlDSig\CryptoSigner;
 use Selective\XmlDSig\PrivateKeyStore;
 
 /**
- * Manager para gestionar el firmado de XML conforme a los requerimientos de la DGII.
- * 
- * Esta clase actúa como el punto de entrada principal para realizar el firmado digital
- * de comprobantes fiscales electrónicos (e-CF) siguiendo el estándar XMLDSig y las
- * especificaciones técnicas de la República Dominicana.
- * 
- * @package PlatinumPlace\DgiiXmlSigner
+ * Manager to handle XML signing according to DGII requirements.
+ *
+ * This class acts as the main entry point for digital signing of
+ * electronic fiscal receipts (e-CF) following the XMLDSig standard
+ * and Dominican Republic technical specifications.
  */
 final class SignManager
 {
     /**
-     * Alias del método sing() para mayor claridad y cumplimiento de estándares PSR.
-     * 
-     * @param string $cert_store Contenido binario del archivo de certificado (.p12)
-     * @param string $password Contraseña del certificado para su lectura
-     * @param string $xml Contenido del XML que se desea firmar
-     * @return string El XML resultante con la firma digital incrustada
-     * @throws DgiiXmlSignerException Si ocurre un error durante el proceso de firma
+     * Alias for sing() method for clarity and PSR standards compliance.
+     *
+     * @param string $cert_store Binary content of the certificate file (.p12)
+     * @param string $password Certificate password
+     * @param string $xml XML content to be signed
+     * @return string The resulting XML with the embedded digital signature
+     * @throws DgiiXmlSignerException If an error occurs during the signing process
      */
     public function sign(string $cert_store, string $password, string $xml): string
     {
@@ -33,19 +31,19 @@ final class SignManager
     }
 
     /**
-     * Firma el XML siguiendo la nomenclatura sugerida por la documentación de la DGII.
+     * Sign the XML following the nomenclature suggested by DGII documentation.
      *
-     * @param string $cert_store Contenido binario del archivo de certificado (.p12)
-     * @param string $password Contraseña para acceder a la clave privada del certificado
-     * @param string $xml Contenido del archivo XML a procesar
-     * @return string XML firmado digitalmente
-     * @throws DgiiXmlSignerException Si el certificado no es válido, la contraseña es incorrecta 
-     *                                o hay un error técnico en el proceso de normalización/firma
+     * @param string $cert_store Binary content of the certificate file (.p12)
+     * @param string $password Password to access the certificate private key
+     * @param string $xml XML content of the file to process
+     * @return string Digitally signed XML
+     * @throws DgiiXmlSignerException If certificate is invalid, password is incorrect
+     *                                or there is a technical error in normalization/signing
      */
     public function sing(string $cert_store, string $password, string $xml): string
     {
         if (!openssl_pkcs12_read($cert_store, $certs, $password)) {
-            throw new DgiiXmlSignerException("Error: No fue posible leer el contenido del certificado. Verifique la contraseña o la configuración 'legacy' de OpenSSL.");
+            throw new DgiiXmlSignerException("Error: Unable to read certificate content. Verify password or OpenSSL 'legacy' configuration.");
         }
 
         $pem_file_contents = $certs['cert'] . $certs['pkey'];

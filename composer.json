@@ -1,7 +1,7 @@
 {
   "name": "platinum-place/php-dgii-xml-signer",
   "type": "library",
-  "description": "Firmador XML para el uso del API de la DGII (Dirección General de Impuestos Internos) de República Dominicana",
+  "description": "XML Signer for DGII (Electronic Invoicing e-CF) Dominican Republic. Implements XMLDSig with specific canonicalization for official validation.",
   "keywords": [
     "DGII",
     "PHP",

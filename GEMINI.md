@@ -1,64 +1,40 @@
-# GEMINI Project Context: PHP DGII XML Signer
+# PHP DGII XML Signer - Guía de Desarrollo
 
-## Project Overview
-Esta es una librería PHP (`platinum-place/php-dgii-xml-signer`) diseñada para firmar digitalmente documentos XML siguiendo los estándares **XMLDSig**, específicamente para el sistema de **Comprobantes Fiscales Electrónicos (e-CF)** de la **Dirección General de Impuestos Internos (DGII)** de la República Dominicana.
+Librería PHP especializada para la firma digital de documentos XML conforme a los estándares de la **DGII** (República Dominicana).
 
-La librería actúa como un wrapper especializado sobre `selective/xmldsig`, aplicando personalizaciones necesarias para cumplir con los requerimientos técnicos de la DGII (como la normalización C14N específica).
+## 🚀 Resumen del Proyecto
 
-### Tech Stack
-- **PHP:** 8.1 o superior.
-- **Dependencias principales:** `selective/xmldsig`.
-- **Extensiones PHP requeridas:** `openssl`, `dom`, `xmlwriter`.
-- **Testing:** PHPUnit.
+Este paquete implementa el estándar **XMLDSig** con personalizaciones críticas en el proceso de canonicalización (C14N) para asegurar que la firma sea aceptada por los servidores de la DGII.
 
----
+### Tecnologías Principales
+- **PHP 8.1+**
+- **Librería Base:** `selective/xmldsig`.
+- **OpenSSL:** Para la lectura de certificados y claves privadas.
 
-## Building and Running
+## 🏗️ Arquitectura
 
-### Setup
-Para instalar las dependencias del proyecto:
+- **`SignManager`:** Punto de entrada simplificado para el usuario.
+- **`XmlSigner`:** Clase core que sobrescribe comportamientos de la librería base para cumplir con DGII.
+- **`Exception/`:** Excepciones personalizadas para el dominio de firma.
+
+## 🛠️ Comandos de Desarrollo
+
 ```bash
-composer install
-```
-
-### Testing
-Para ejecutar las pruebas unitarias:
-```bash
+# Ejecutar pruebas (PHPUnit)
 composer test
-# O directamente
-./vendor/bin/phpunit
+
+# Corregir estilo de código (PHP-CS-Fixer)
+composer lint
+
+# Análisis estático (PHPStan)
+composer analyze
 ```
-*Nota: Actualmente `tests/SignManagerTest.php` existe pero no contiene casos de prueba implementados.*
+
+## 📝 Convenciones de Desarrollo
+
+1.  **DocBlocks:** Todo el código fuente debe estar documentado utilizando DocBlocks en **Inglés**.
+2.  **Canonicalización:** Cualquier cambio en `XmlSigner::signDocument` o `XmlSigner::appendSignature` debe ser validado contra el esquema oficial de la DGII, ya que la normalización es extremadamente sensible.
+3.  **Certificados:** Asegurar compatibilidad con la configuración "legacy" de OpenSSL si es necesario para ciertos certificados `.p12`.
 
 ---
-
-## Development Conventions
-
-### Estructura de Archivos
-- `src/`: Contiene la lógica principal.
-    - `SignManager.php`: Punto de entrada principal para el firmado.
-    - `XmlSigner.php`: Implementación personalizada del firmador XMLDSig.
-- `tests/`: Pruebas unitarias (PSR-4 `PlatinumPlace\DgiiXmlSigner\Tests\`).
-
-### Observaciones Técnicas Importantes
-1. **Configuración de OpenSSL:** En entornos modernos (OpenSSL 3+), los certificados `.p12` antiguos de la DGII pueden requerir la habilitación del proveedor **legacy** en `openssl.cnf`.
-2. **Normalización C14N:** La implementación en `XmlSigner.php` utiliza `$element->C14N()` sin parámetros (equivalente a `false, false`) para cumplir con la documentación de la DGII.
-3. **Gestión de Errores:** Se utiliza `DgiiXmlSignerException` para manejar errores de lectura de certificados o fallos en el proceso de firma, eliminando el uso de `exit`.
-4. **Nomenclatura:** Se ha añadido el método `sign()` como alias de `sing()` para mayor compatibilidad con estándares de codificación, manteniendo `sing()` para alineación con la documentación de la DGII.
-
----
-
-## Usage Example
-```php
-use PlatinumPlace\DgiiXmlSigner\SignManager;
-use PlatinumPlace\DgiiXmlSigner\Exception\DgiiXmlSignerException;
-
-try {
-    $manager = new SignManager();
-    // Puedes usar sign() (estándar) o sing() (DGII)
-    $signedXml = $manager->sign($p12Content, $password, $xmlContent);
-} catch (DgiiXmlSignerException $e) {
-    // Manejar error de certificado o firma
-    echo $e->getMessage();
-}
-```
+*Este archivo sirve como contexto para Gemini CLI. Mantener actualizado ante cambios arquitectónicos.*

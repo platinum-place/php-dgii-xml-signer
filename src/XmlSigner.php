@@ -13,29 +13,27 @@ use Selective\XmlDSig\XmlReader;
 use UnexpectedValueException;
 
 /**
- * Personalización del firmador XMLDSIG para cumplir con los requerimientos específicos de la DGII.
+ * Customization of the XMLDSIG signer to meet specific DGII requirements.
  *
- * Implementa las variaciones en la normalización C14N (Canonicalización) 
- * requeridas para el sistema de facturación electrónica de la República Dominicana,
- * asegurando la compatibilidad con el validador oficial de la DGII.
- * 
- * @package PlatinumPlace\DgiiXmlSigner
+ * Implements variations in C14N normalization (Canonicalization)
+ * required for the electronic invoicing system of the Dominican Republic,
+ * ensuring compatibility with the official DGII validator.
  */
 final class XmlSigner
 {
-    /** @var string URI de referencia para la firma (vacío por defecto para referenciar todo el documento) */
+    /** @var string Reference URI for the signature (empty by default to reference the entire document) */
     private string $referenceUri = '';
 
-    /** @var XmlReader Lector de XML de la librería base selective/xmldsig */
+    /** @var XmlReader XML reader from the base selective/xmldsig library */
     private XmlReader $xmlReader;
 
-    /** @var CryptoSignerInterface Instancia encargada de las operaciones criptográficas */
+    /** @var CryptoSignerInterface Instance in charge of cryptographic operations */
     private CryptoSignerInterface $cryptoSigner;
 
     /**
-     * Inicializa el firmador con el motor criptográfico configurado.
-     * 
-     * @param CryptoSignerInterface $cryptoSigner Instancia que contiene las claves y algoritmos de firma
+     * Initialize the signer with the configured cryptographic engine.
+     *
+     * @param CryptoSignerInterface $cryptoSigner Instance containing signing keys and algorithms.
      */
     public function __construct(CryptoSignerInterface $cryptoSigner)
     {
@@ -44,51 +42,51 @@ final class XmlSigner
     }
 
     /**
-     * Firma el contenido XML en string y lo devuelve como string firmado.
+     * Sign XML content as string and return the signed XML string.
      *
-     * @param string $data El contenido XML original que se desea procesar
-     * @return string El XML firmado (con el bloque <Signature> inyectado)
-     * @throws XmlSignerException Si el XML proporcionado es inválido o el proceso de firma falla
+     * @param string $data The original XML content to process.
+     * @return string The signed XML (with the <Signature> block injected).
+     * @throws XmlSignerException If the provided XML is invalid or the signing process fails.
      */
     public function signXml(string $data): string
     {
         $xml = new DOMDocument();
 
-        // Configuración requerida por la DGII para evitar alteraciones en el digest debido a indentación
+        // Required DGII configuration to avoid digest alterations due to indentation
         $xml->preserveWhiteSpace = false;
         $xml->formatOutput = false;
 
         if (!$xml->loadXML($data)) {
-            throw new XmlSignerException('No se pudo cargar el XML proporcionado.');
+            throw new XmlSignerException('Unable to load provided XML.');
         }
 
         if (!$xml->documentElement) {
-            throw new XmlSignerException('El documento XML no tiene un elemento raíz definido.');
+            throw new XmlSignerException('The XML document has no root element defined.');
         }
 
         return $this->signDocument($xml);
     }
 
     /**
-     * Firma un objeto DOMDocument de forma directa.
+     * Sign a DOMDocument object directly.
      *
-     * @param DOMDocument $document Documento DOM cargado
-     * @param DOMElement|null $element Elemento específico a firmar (si es null, firma la raíz)
-     * @return string El XML resultante en formato string
-     * @throws XmlSignerException Si el elemento raíz es nulo o hay fallos en la canonicalización
+     * @param DOMDocument $document Loaded DOM document.
+     * @param DOMElement|null $element Specific element to sign (if null, signs the root).
+     * @return string The resulting XML in string format.
+     * @throws XmlSignerException If the root element is null or canonicalization fails.
      */
     public function signDocument(DOMDocument $document, ?DOMElement $element = null): string
     {
         $element = $element ?? $document->documentElement;
 
         if ($element === null) {
-            throw new XmlSignerException('Elemento XML no válido para el proceso de firma.');
+            throw new XmlSignerException('Invalid XML element for the signing process.');
         }
 
-        /** 
-         * Cambio técnico específico para DGII: 
-         * Se realiza la normalización exclusiva (C14N) sin parámetros explícitos 
-         * para garantizar que los namespaces se traten según el requerimiento dominicano.
+        /**
+         * Technical change specific for DGII:
+         * Exclusive normalization (C14N) is performed without explicit parameters
+         * to ensure namespaces are handled according to Dominican requirements.
          */
         $canonicalData = $element->C14N();
 
@@ -100,23 +98,23 @@ final class XmlSigner
         $result = $document->saveXML();
 
         if ($result === false) {
-            throw new XmlSignerException('Error al guardar el XML firmado.');
+            throw new XmlSignerException('Error saving the signed XML.');
         }
 
         return $result;
     }
 
     /**
-     * Inserta la estructura <Signature> requerida por el estándar XMLDSig.
+     * Inserts the <Signature> structure required by the XMLDSig standard.
      *
-     * @param DOMDocument $xml Documento donde se inyectará la firma
-     * @param string $digestValue Valor hash (digest) calculado para el elemento referenciado
-     * @throws UnexpectedValueException Si el documento no tiene un elemento raíz válido
+     * @param DOMDocument $xml Document where the signature will be injected.
+     * @param string $digestValue Hash value (digest) calculated for the referenced element.
+     * @throws UnexpectedValueException If the document has no valid root element.
      */
     private function appendSignature(DOMDocument $xml, string $digestValue): void
     {
         if (!$xml->documentElement) {
-            throw new UnexpectedValueException('Elemento raíz no definido.');
+            throw new UnexpectedValueException('Root element not defined.');
         }
 
         $signatureElement = $xml->createElement('Signature');
@@ -161,16 +159,16 @@ final class XmlSigner
         $keyInfoElement = $xml->createElement('KeyInfo');
         $signatureElement->appendChild($keyInfoElement);
 
-        // Los certificados se añaden al KeyInfo si están configurados en el almacén de claves
+        // Certificates are added to KeyInfo if configured in the key store
         $certificates = $this->cryptoSigner->getPrivateKeyStore()->getCertificates();
         if ($certificates) {
             $this->appendX509Certificates($xml, $keyInfoElement, $certificates);
         }
 
-        /** 
-         * Segundo cambio técnico crítico para DGII: 
-         * Normalización C14N() sin parámetros en el bloque SignedInfo 
-         * antes de calcular el SignatureValue.
+        /**
+         * Critical technical change for DGII:
+         * C14N() normalization without parameters in the SignedInfo block
+         * before calculating the SignatureValue.
          */
         $c14nSignedInfo = $signedInfoElement->C14N();
 
@@ -182,11 +180,11 @@ final class XmlSigner
     }
 
     /**
-     * Crea y añade el elemento X509Data con los certificados en formato base64.
+     * Creates and adds the X509Data element with certificates in base64 format.
      *
-     * @param DOMDocument $xml Documento XML
-     * @param DOMElement $keyInfoElement Nodo <KeyInfo> donde se insertará la información
-     * @param OpenSSLCertificate[] $certificates Lista de certificados a incrustar
+     * @param DOMDocument $xml XML Document.
+     * @param DOMElement $keyInfoElement <KeyInfo> node where the info will be inserted.
+     * @param OpenSSLCertificate[] $certificates List of certificates to embed.
      */
     private function appendX509Certificates(DOMDocument $xml, DOMElement $keyInfoElement, array $certificates): void
     {
@@ -203,11 +201,11 @@ final class XmlSigner
     }
 
     /**
-     * Establece el URI de referencia para el bloque <Reference>.
-     * 
-     * Por defecto se utiliza un string vacío para referenciar a todo el documento.
-     * 
-     * @param string $referenceUri El identificador de referencia (ej. "#id_del_elemento")
+     * Set the reference URI for the <Reference> block.
+     *
+     * By default, an empty string is used to reference the entire document.
+     *
+     * @param string $referenceUri The reference identifier (e.g., "#element_id").
      * @return void
      */
     public function setReferenceUri(string $referenceUri): void
@@ -215,4 +213,3 @@ final class XmlSigner
         $this->referenceUri = $referenceUri;
     }
 }
-
