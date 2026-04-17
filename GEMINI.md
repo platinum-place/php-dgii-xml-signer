@@ -1,40 +1,40 @@
-# PHP DGII XML Signer - Guía de Desarrollo
+# PHP DGII XML Signer - Development Guide
 
-Librería PHP especializada para la firma digital de documentos XML conforme a los estándares de la **DGII** (República Dominicana).
+Specialized PHP library for digital signing of XML documents according to **DGII** (Dominican Republic) standards.
 
-## 🚀 Resumen del Proyecto
+## 🚀 Project Overview
 
-Este paquete implementa el estándar **XMLDSig** con personalizaciones críticas en el proceso de canonicalización (C14N) para asegurar que la firma sea aceptada por los servidores de la DGII.
+This package implements the **XMLDSig** standard with critical customizations in the canonicalization (C14N) process to ensure that the signature is accepted by DGII servers.
 
-### Tecnologías Principales
+### Core Technologies
 - **PHP 8.1+**
-- **Librería Base:** `selective/xmldsig`.
-- **OpenSSL:** Para la lectura de certificados y claves privadas.
+- **Base Library:** \`selective/xmldsig\`.
+- **OpenSSL:** For certificate and private key reading.
 
-## 🏗️ Arquitectura
+## 🏗️ Architecture
 
-- **`SignManager`:** Punto de entrada simplificado para el usuario.
-- **`XmlSigner`:** Clase core que sobrescribe comportamientos de la librería base para cumplir con DGII.
-- **`Exception/`:** Excepciones personalizadas para el dominio de firma.
+- **\`SignManager\`:** Simplified entry point for the user.
+- **\`XmlSigner\`:** Core class that overrides base library behaviors to comply with DGII.
+- **\`Exception/\`:** Custom exceptions for the signing domain.
 
-## 🛠️ Comandos de Desarrollo
+## 🛠️ Development Commands
 
-```bash
-# Ejecutar pruebas (PHPUnit)
+\`\`\`bash
+# Run tests (PHPUnit)
 composer test
 
-# Corregir estilo de código (PHP-CS-Fixer)
+# Fix code style (PHP-CS-Fixer)
 composer lint
 
-# Análisis estático (PHPStan)
+# Static analysis (PHPStan)
 composer analyze
-```
+\`\`\`
 
-## 📝 Convenciones de Desarrollo
+## 📝 Development Conventions
 
-1.  **DocBlocks:** Todo el código fuente debe estar documentado utilizando DocBlocks en **Inglés**.
-2.  **Canonicalización:** Cualquier cambio en `XmlSigner::signDocument` o `XmlSigner::appendSignature` debe ser validado contra el esquema oficial de la DGII, ya que la normalización es extremadamente sensible.
-3.  **Certificados:** Asegurar compatibilidad con la configuración "legacy" de OpenSSL si es necesario para ciertos certificados `.p12`.
+1.  **DocBlocks:** All source code must be documented using DocBlocks in **English**.
+2.  **Canonicalization:** Any changes in \`XmlSigner::signDocument\` or \`XmlSigner::appendSignature\` must be validated against the official DGII schema, as normalization is extremely sensitive.
+3.  **Certificates:** Ensure compatibility with OpenSSL "legacy" configuration if required for certain \`.p12\` certificates.
 
 ---
-*Este archivo sirve como contexto para Gemini CLI. Mantener actualizado ante cambios arquitectónicos.*
+*This file serves as context for Gemini CLI. Keep it updated upon architectural changes.*

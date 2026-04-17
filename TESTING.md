@@ -1,30 +1,30 @@
-# Guía de Pruebas - DGII XML Signer
+# Testing Guide - DGII XML Signer
 
-Este documento explica cómo realizar pruebas en el paquete para asegurar que el firmado funciona correctamente.
+This document explains how to perform tests in the package to ensure that signing works correctly.
 
-## Requisitos
-- Composer instalado.
-- Dependencias instaladas: `composer install`.
-- Extensión `openssl` habilitada en PHP.
+## Requirements
+- Composer installed.
+- Dependencies installed: \`composer install\`.
+- \`openssl\` extension enabled in PHP.
 
-## Cómo ejecutar las pruebas
-Para correr todos los tests, usa el siguiente comando desde la raíz del proyecto:
+## How to run tests
+To run all tests, use the following command from the project root:
 
-```bash
+\`\`\`bash
 ./vendor/bin/phpunit
-```
+\`\`\`
 
-## Pruebas con Certificados Reales
-Para probar el proceso de firma con un certificado real (.p12) sin afectar el código de producción:
+## Testing with Real Certificates
+To test the signing process with a real certificate (.p12) without affecting production code:
 
-1.  Coloca tu certificado en `tests/Fixtures/tu_certificado.p12`.
-2.  Abre el archivo `tests/SignManagerTest.php`.
-3.  En el método `test_functional_signature_process`, actualiza:
-    - El nombre del archivo certificado.
-    - La **contraseña** del certificado (variable `$password`).
-4.  Vuelve a ejecutar `./vendor/bin/phpunit`.
+1.  Place your certificate in \`tests/Fixtures/your_certificate.p12\`.
+2.  Open the \`tests/SignManagerTest.php\` file.
+3.  In the \`test_functional_signature_process\` method, update:
+    -   The certificate file name.
+    -   The certificate **password** (\`$password\` variable).
+4.  Run \`./vendor/bin/phpunit\` again.
 
-## Solución de Problemas (OpenSSL 3+)
-Si recibes un error diciendo que no se pudo leer el certificado, es probable que necesites habilitar el modo **Legacy** en OpenSSL, ya que los certificados de la DGII suelen usar cifrados antiguos (RC2-40-CBC).
+## Troubleshooting (OpenSSL 3+)
+If you receive an error saying the certificate could not be read, you probably need to enable **Legacy** mode in OpenSSL, as DGII certificates often use old ciphers (RC2-40-CBC).
 
-Consulta el archivo `README.md` para ver los pasos detallados de configuración en tu sistema operativo.
+Refer to the \`README.md\` file for detailed configuration steps on your operating system.

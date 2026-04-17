@@ -1,38 +1,38 @@
-# Guía de Contribución
+# Contribution Guide
 
-¡Gracias por considerar contribuir a **PHP DGII XML Signer**! Toda ayuda es bienvenida para mantener esta herramienta actualizada con los estándares de la DGII.
+Thank you for considering contributing to **PHP DGII XML Signer**! All help is welcome to keep this tool updated with DGII standards.
 
-## Proceso de Desarrollo
+## Development Process
 
-Para contribuir, sigue estos pasos:
+To contribute, follow these steps:
 
-1. Realiza un **Fork** del repositorio.
-2. Crea una rama para tu característica o corrección (`git checkout -b feature/nueva-mejora`).
-3. Instala las dependencias: `composer install`.
-4. Realiza tus cambios asegurándote de seguir los estándares de código (PSR-12).
-5. **Ejecuta las pruebas**: Asegúrate de que todo sigue funcionando con `composer test`.
-6. **Verifica la calidad del código**:
-   - Formato: `composer lint` (usamos PHP-CS-Fixer).
-   - Análisis Estático: `composer analyze` (usamos PHPStan).
-7. Realiza el **Commit** de tus cambios siguiendo [Conventional Commits](https://www.conventionalcommits.org/).
-8. Realiza el **Push** a tu rama y abre un **Pull Request**.
+1.  **Fork** the repository.
+2.  Create a branch for your feature or fix (\`git checkout -b feature/new-improvement\`).
+3.  Install dependencies: \`composer install\`.
+4.  Make your changes ensuring you follow code standards (PSR-12).
+5.  **Run tests**: Ensure everything is still working with \`composer test\`.
+6.  **Verify code quality**:
+    -   Formatting: \`composer lint\` (we use PHP-CS-Fixer).
+    -   Static Analysis: \`composer analyze\` (we use PHPStan).
+7.  **Commit** your changes following [Conventional Commits](https://www.conventionalcommits.org/).
+8.  **Push** to your branch and open a **Pull Request**.
 
-## Estándares de Código
+## Code Standards
 
-Utilizamos **PHP-CS-Fixer** para mantener un estilo de código consistente siguiendo el estándar PSR-12. Por favor, ejecuta `composer lint` antes de enviar cualquier cambio.
+We use **PHP-CS-Fixer** to maintain a consistent code style following the PSR-12 standard. Please run \`composer lint\` before submitting any changes.
 
-## Pruebas (Testing)
+## Testing
 
-Si agregas una nueva funcionalidad, por favor incluye sus respectivos tests en la carpeta `tests/`. No se aceptarán Pull Requests que reduzcan la cobertura de pruebas actual o que introduzcan fallos en los tests existentes.
+If you add new functionality, please include its respective tests in the \`tests/\` folder. Pull Requests that reduce current test coverage or introduce failures in existing tests will not be accepted.
 
-## Reporte de Errores
+## Error Reporting
 
-Si encuentras un error, por favor abre un *Issue* en GitHub detallando:
-- Versión de PHP.
-- Versión de la librería.
-- Pasos para reproducir el error.
-- El error obtenido (logs o mensajes de excepción).
+If you find a bug, please open an *Issue* on GitHub detailing:
+-   PHP version.
+-   Library version.
+-   Steps to reproduce the error.
+-   The error obtained (logs or exception messages).
 
 ---
 
-¡Gracias por ayudar a la comunidad de facturación electrónica en República Dominicana!
+Thank you for helping the electronic invoicing community in the Dominican Republic!
