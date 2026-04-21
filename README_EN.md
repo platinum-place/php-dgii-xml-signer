@@ -19,6 +19,76 @@ Specialized XML Signer designed to comply with **Electronic Invoicing (e-CF)** s
 
 ---
 
+## Clarifications
+
+Although the DGII documentation explains how to use the **XMLDSIG** library to read certificates, and this application is based on that documentation, I would like to point out that, at least for me, there is a part of the documentation that is not entirely clear.
+
+Below, I’ll show some examples:
+
+### Case 1: Modifying the `XmlSigner.php` class (or creating a copy of it with the changes in place)
+
+One such example is found in the section regarding the following line of code:
+
+```php
+$canonicalData = $element->C14N(true, false);
+```
+
+It should be changed to:
+
+```php
+$canonicalData = $element->C14N(false, false);
+```
+
+Although the documentation explains that this line must be changed, it does not mention that the same change must also be made in another part of the file:
+
+```php
+$c14nSignedInfo = $signedInfoElement->C14N(true, false);
+```
+
+It should be changed to:
+
+```php
+$c14nSignedInfo = $signedInfoElement->C14N();
+```
+
+This change must be made specifically on line 179 of the original file.
+
+### Case 2: Error reading the certificate
+
+The documentation mentions that the library was tested on PHP versions 8.1.12 and 8.1.13, but if you use the package in a newer version, such as 8.4 or 8.5, validation fails because the RC2-40-CBC cipher used in .p12 files has changed in newer versions of OpenSSL, which typically come with PHP 8.2 and later.
+
+To fix this, we must modify the `openssl.cnf` file to support the cipher that
+
+#### Enable “legacy” encryption
+
+1. Edit the `openssl.cnf` file using the following command:
+   ```bash
+   sudo nano /etc/ssl/openssl.cnf
+    ```
+
+2. Find the [default_sect] section and change it to:
+   ```bash
+    [default_sect]
+    activate = 1
+    ```
+
+3. Next, find the [legacy_sect] section and change it to:
+   ```bash
+    [legacy_sect]
+    activate = 1
+    ```
+
+4. Finally, find the [provider_sect] section and change it to:
+   ```bash
+    [provider_sect]
+    default = default_sect
+    legacy = legacy_sect
+    ```
+
+5.  Finally, save the changes, exit the file, and restart the environment.
+
+---
+
 ## 🛠️ Installation
 
 ```bash
