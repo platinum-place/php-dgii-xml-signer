@@ -31,6 +31,24 @@ final class SignManager
     }
 
     /**
+     * Validates and parses the PKCS#12 certificate store.
+     *
+     * @param string $cert_store Binary content of the certificate file (.p12)
+     * @param string $password Password to access the certificate private key
+     * @return array<string, mixed> The parsed certificate data containing 'cert' and 'pkey'
+     * @throws DgiiXmlSignerException If certificate is invalid, password is incorrect
+     *                                or OpenSSL 'legacy' configuration is required.
+     */
+    public function validateCertificate(string $cert_store, string $password): array
+    {
+        if (!openssl_pkcs12_read($cert_store, $certs, $password)) {
+            throw new DgiiXmlSignerException("Error: Unable to read certificate content. Verify password or OpenSSL 'legacy' configuration.");
+        }
+
+        return $certs;
+    }
+
+    /**
      * Sign the XML following the nomenclature suggested by DGII documentation.
      *
      * @param string $cert_store Binary content of the certificate file (.p12)
@@ -42,9 +60,7 @@ final class SignManager
      */
     public function sing(string $cert_store, string $password, string $xml): string
     {
-        if (!openssl_pkcs12_read($cert_store, $certs, $password)) {
-            throw new DgiiXmlSignerException("Error: Unable to read certificate content. Verify password or OpenSSL 'legacy' configuration.");
-        }
+        $certs = $this->validateCertificate($cert_store, $password);
 
         $pem_file_contents = $certs['cert'] . $certs['pkey'];
 

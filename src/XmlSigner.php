@@ -77,7 +77,7 @@ final class XmlSigner
      */
     public function signDocument(DOMDocument $document, ?DOMElement $element = null): string
     {
-        $element = $element ?? $document->documentElement;
+        $element ??= $document->documentElement;
 
         if ($element === null) {
             throw new XmlSignerException('Invalid XML element for the signing process.');

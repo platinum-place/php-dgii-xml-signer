@@ -10,6 +10,4 @@ use RuntimeException;
  * This exception is thrown when failures occur during P12 certificate reading,
  * OpenSSL configuration errors, or issues with the structure of the original XML.
  */
-class DgiiXmlSignerException extends RuntimeException
-{
-}
+class DgiiXmlSignerException extends RuntimeException {}
