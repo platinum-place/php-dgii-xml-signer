@@ -19,6 +19,76 @@ Firmador de XML especializado para cumplir con los estándares de **Facturación
 
 ---
 
+## Aclaraciones
+
+Aunque la documentación de la DGII explica cómo utilizar la librería **XMLDSIG** para leer los certificados, y esta aplicación está basada en esa documentación, destaco que, por lo menos para mí, hay una parte de la documentación que no está del todo clara.
+
+A continuación, muestro algunos casos:
+
+### Caso 1: Cambiar la clase `XmlSigner.php` (o hacer una copia de la misma con los cambios de lugar)
+
+Uno de estos casos se encuentra en la parte sobre la siguiente línea de código:
+
+```php
+$canonicalData = $element->C14N(true, false);
+```
+
+Debería cambiarse a:
+
+```php
+$canonicalData = $element->C14N(false, false);
+```
+
+Si bien la documentación explica que se debe cambiar esta línea, no menciona que también es necesario realizar el mismo cambio en otra parte del archivo:
+
+```php
+$c14nSignedInfo = $signedInfoElement->C14N(true, false);
+```
+
+Debería cambiarse a:
+
+```php
+$c14nSignedInfo = $signedInfoElement->C14N();
+```
+
+Este cambio debe realizarse específicamente en la línea 179 del archivo original.
+
+### Caso 2: Error al leer el certificado
+
+La documentación menciona que la librería fue probada en PHP versiones 8.1.12 y 8.1.13, si utilizas el paquete en una version mas reciente, como 8.4 o 8.5, la validación falla debido a que el cifrado RC2-40-CBC utilizado en los archivos .p12 cambió en las versiones más recientes de OpenSSL, que normalmente vienen con PHP 8.2 en adelante.
+
+Para solucionarlo, debemos modificar el archivo `openssl.cnf` para que admita el cifrado que necesitamos, cambiando la configuración por defecto al modo "legacy".
+
+#### Habilitar cifrado "legacy"
+
+1. Edita el archivo `openssl.cnf` con el siguiente comando:
+   ```bash
+   sudo nano /etc/ssl/openssl.cnf
+    ```
+
+2. Busca la sección [default_sect] y cámbiarla a:
+   ```bash
+    [default_sect]
+    activate = 1
+    ```
+
+3. Luego, busca la sección [legacy_sect] y cámbiarla a:
+   ```bash
+    [legacy_sect]
+    activate = 1
+    ```
+
+4. Por último, busca la sección [provider_sect] y cámbiarla a:
+   ```bash
+    [provider_sect]
+    default = default_sect
+    legacy = legacy_sect
+    ```
+
+5.  Finalmente, guardar los cambios, salir del archivo y reiniciar el entorno.
+
+---
+
 ## 🛠️ Instalación
 
 ```bash
