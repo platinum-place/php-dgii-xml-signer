@@ -8,8 +8,13 @@ This package implements the **XMLDSig** standard with critical customizations in
 
 ### Core Technologies
 - **PHP 8.1+**
-- **Base Library:** \`selective/xmldsig\`.
+- **Base Library:** `selective/xmldsig`.
 - **OpenSSL:** For certificate and private key reading.
+
+### Official References
+- **[Documentación sobre e-CF](https://dgii.gov.do/cicloContribuyente/facturacion/comprobantesFiscalesElectronicosE-CF/Paginas/documentacionSobreE-CF.aspx)**
+- **[Instructivo de Firmado de e-CF (PDF)](https://dgii.gov.do/cicloContribuyente/facturacion/comprobantesFiscalesElectronicosE-CF/Documentacin%20sobre%20eCF/Instructivos%20sobre%20Facturaci%C3%B3n%20Electr%C3%B3nica/Firmado%20de%20e-CF.pdf)**
+
 
 ## 🏗️ Architecture
 

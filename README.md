@@ -19,41 +19,43 @@ Firmador de XML especializado para cumplir con los estándares de **Facturación
 
 ---
 
-## Aclaraciones
+## 🛠️ Créditos y Base Técnica
 
-Aunque la documentación de la DGII explica cómo utilizar la librería **XMLDSIG** para leer los certificados, y esta aplicación está basada en esa documentación, destaco que, por lo menos para mí, hay una parte de la documentación que no está del todo clara.
+Este proyecto se basa directamente en las especificaciones del **[Instructivo sobre Facturación Electrónica: Firmado de e-CF](https://dgii.gov.do/cicloContribuyente/facturacion/comprobantesFiscalesElectronicosE-CF/Documentacin%20sobre%20eCF/Instructivos%20sobre%20Facturaci%C3%B3n%20Electr%C3%B3nica/Firmado%20de%20e-CF.pdf)** publicado por la **DGII**.
 
-A continuación, muestro algunos casos:
+Para la implementación técnica, utilizamos como base la librería **[selective/xmldsig](https://github.com/selective-php/xmldsig)**. Esta librería es la recomendada (e ilustrada) por la DGII en sus manuales para desarrolladores PHP. Sin embargo, para lograr una validación exitosa en los servidores oficiales, es necesario realizar ajustes manuales que no están detallados de forma explícita en la documentación general.
 
-### Caso 1: Cambiar la clase `XmlSigner.php` (o hacer una copia de la misma con los cambios de lugar)
+---
 
-Uno de estos casos se encuentra en la parte sobre la siguiente línea de código:
+## ⚠️ Aclaraciones Importantes
 
-```php
-$canonicalData = $element->C14N(true, false);
-```
+Aunque la documentación de la DGII proporciona ejemplos, existen detalles críticos en la implementación de la librería base que deben ajustarse para que el XML sea aceptado.
 
-Debería cambiarse a:
+### Caso 1: Modificaciones en `XmlSigner.php`
 
-```php
-$canonicalData = $element->C14N(false, false);
-```
+Según el instructivo de la DGII, es imperativo modificar la clase `XmlSigner.php` de la librería `selective/xmldsig` para forzar una canonicalización sin comentarios.
 
-Si bien la documentación explica que se debe cambiar esta línea, no menciona que también es necesario realizar el mismo cambio en otra parte del archivo:
+1. **Ajuste de Canonicalización General:**
+   En la clase `XmlSigner`, se debe asegurar que el método `C14N` se llame con los parámetros correctos para excluir comentarios:
+   ```php
+   // Cambiar de:
+   $canonicalData = $element->C14N(true, false);
+   // A:
+   $canonicalData = $element->C14N(false, false);
+   ```
 
-```php
-$c14nSignedInfo = $signedInfoElement->C14N(true, false);
-```
+2. **Ajuste en `SignedInfo` (Línea 179 aprox.):**
+   Para la firma del bloque `SignedInfo`, se requiere una normalización aún más estricta:
+   ```php
+   // Cambiar de:
+   $c14nSignedInfo = $signedInfoElement->C14N(true, false);
+   // A:
+   $c14nSignedInfo = $signedInfoElement->C14N();
+   ```
 
-Debería cambiarse a:
+**Nota:** Este paquete ya incluye estas correcciones aplicadas de forma nativa en su clase `XmlSigner`, por lo que no necesitas modificar nada en tu carpeta `vendor`.
 
-```php
-$c14nSignedInfo = $signedInfoElement->C14N();
-```
-
-Este cambio debe realizarse específicamente en la línea 179 del archivo original.
-
-### Caso 2: Error al leer el certificado
+### Caso 2: Compatibilidad con OpenSSL (Error RC2-40-CBC)
 
 La documentación menciona que la librería fue probada en PHP versiones 8.1.12 y 8.1.13, si utilizas el paquete en una version mas reciente, como 8.4 o 8.5, la validación falla debido a que el cifrado RC2-40-CBC utilizado en los archivos .p12 cambió en las versiones más recientes de OpenSSL, que normalmente vienen con PHP 8.2 en adelante.
 
@@ -127,6 +129,12 @@ Ofrezco servicios de consultoría especializada para empresas que buscan certifi
 
 - **Contacto:** Mis métodos de contacto actualizados están disponibles en mi **[Perfil de GitHub](https://github.com/warlyn)**.
 - **Issues:** Para errores del paquete, por favor abre un issue en este repositorio.
+
+## 📚 Recursos Adicionales
+
+- **[Documentación Oficial DGII - Facturación Electrónica](https://dgii.gov.do/cicloContribuyente/facturacion/comprobantesFiscalesElectronicosE-CF/Paginas/documentacionSobreE-CF.aspx)**: Portal principal con toda la normativa y documentación técnica.
+- **[Instructivo de Firmado de e-CF (PDF)](https://dgii.gov.do/cicloContribuyente/facturacion/comprobantesFiscalesElectronicosE-CF/Documentacin%20sobre%20eCF/Instructivos%20sobre%20Facturaci%C3%B3n%20Electr%C3%B3nica/Firmado%20de%20e-CF.pdf)**: Guía técnica detallada sobre el proceso de firma digital.
+- **[Librería Base: selective/xmldsig](https://github.com/selective-php/xmldsig)**: Repositorio de la librería utilizada como motor de firma.
 
 ---
 
