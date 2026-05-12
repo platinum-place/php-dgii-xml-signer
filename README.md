@@ -59,8 +59,6 @@ Según el instructivo de la DGII, es imperativo modificar la clase `XmlSigner.ph
 
 La documentación menciona que la librería fue probada en PHP versiones 8.1.12 y 8.1.13, si utilizas el paquete en una version mas reciente, como 8.4 o 8.5, la validación falla debido a que el cifrado RC2-40-CBC utilizado en los archivos .p12 cambió en las versiones más recientes de OpenSSL, que normalmente vienen con PHP 8.2 en adelante.
 
-Para solucionarlo, debemos modificar el archivo `openssl.cnf` para que admita el cifrado que necesitamos, cambiando la configuración por defecto al modo "legacy".
-
 #### Habilitar cifrado "legacy"
 
 1. Edita el archivo `openssl.cnf` con el siguiente comando:
@@ -121,13 +119,23 @@ file_put_contents('signed_invoice.xml', $signedXml);
 
 ---
 
+## 🛠️ Desarrollo y Contribución
+
+Este proyecto está optimizado para ser desarrollado tanto por humanos como por **Asistentes de IA**.
+
+- **Reglas Arquitectónicas:** Si deseas contribuir, por favor revisa el archivo [GEMINI.md](./GEMINI.md), el cual contiene las convenciones y reglas técnicas que deben seguirse (y que tu IA debe leer).
+- **Guía de Contribución:** Detalles sobre cómo enviar PRs y configurar el entorno en [CONTRIBUTING.md](./CONTRIBUTING.md).
+- **Contexto DGII:** La normativa técnica detallada que rige este paquete se encuentra en [docs/dgii/GEMINI.md](./docs/dgii/GEMINI.md).
+
+---
+
 ## 🙋‍♂️ Soporte y Consultoría
 
 Si necesitas asistencia técnica con la implementación de este paquete o tienes dudas generales sobre el ecosistema de **Facturación Electrónica en la República Dominicana**, puedes contactarme directamente.
 
 Ofrezco servicios de consultoría especializada para empresas que buscan certificar sus sistemas ante la DGII.
 
-- **Contacto:** Mis métodos de contacto actualizados están disponibles en mi **[Perfil de GitHub](https://github.com/warlyn)**.
+- **Contacto:** Mis métodos de contacto actualizados están disponibles en mi **[Perfil de GitHub](https://github.com/platinum-place)**.
 - **Issues:** Para errores del paquete, por favor abre un issue en este repositorio.
 
 ## 📚 Recursos Adicionales

@@ -48,9 +48,9 @@ According to the DGII manual, it is imperative to modify the `XmlSigner.php` cla
    For the signature of the `SignedInfo` block, even stricter normalization is required:
    ```php
    // Change from:
-   $c14nSignedInfo = $signedInfoElement->C14N(true, false);
+   $canonicalSignedInfo = $signedInfoElement->C14N(true, false);
    // To:
-   $c14nSignedInfo = $signedInfoElement->C14N();
+   $canonicalSignedInfo = $signedInfoElement->C14N();
    ```
 
 **Note:** This package already includes these corrections applied natively in its own `XmlSigner` class, so you don't need to modify anything in your `vendor` folder.
@@ -58,8 +58,6 @@ According to the DGII manual, it is imperative to modify the `XmlSigner.php` cla
 ### Case 2: OpenSSL Compatibility (RC2-40-CBC Error)
 
 The documentation mentions that the library was tested on PHP versions 8.1.12 and 8.1.13, but if you use the package in a newer version, such as 8.4 or 8.5, validation fails because the RC2-40-CBC cipher used in .p12 files has changed in newer versions of OpenSSL, which typically come with PHP 8.2 and later.
-
-To fix this, we must modify the `openssl.cnf` file to support the cipher that
 
 #### Enable “legacy” encryption
 
@@ -87,7 +85,7 @@ To fix this, we must modify the `openssl.cnf` file to support the cipher that
     legacy = legacy_sect
     ```
 
-5.  Finally, save the changes, exit the file, and restart the environment.
+5. Finally, save the changes, exit the file, and restart the environment.
 
 ---
 
@@ -121,13 +119,23 @@ file_put_contents('signed_invoice.xml', $signedXml);
 
 ---
 
+## 🛠️ Development and Contribution
+
+This project is optimized for development by both humans and **AI Assistants**.
+
+- **Architectural Rules:** If you wish to contribute, please review the [GEMINI.md](./GEMINI.md) file, which contains the conventions and technical rules to be followed (and which your AI should read).
+- **Contribution Guide:** Details on how to submit PRs and set up the environment in [CONTRIBUTING.md](./CONTRIBUTING.md).
+- **DGII Context:** Detailed technical regulations governing this package can be found in [docs/dgii/GEMINI.md](./docs/dgii/GEMINI.md).
+
+---
+
 ## 🙋‍♂️ Support and Consulting
 
 If you need technical assistance with the implementation of this package or have general questions about the **Electronic Invoicing ecosystem in the Dominican Republic**, feel free to contact me.
 
 I offer specialized consulting services for companies seeking to certify their systems with the DGII.
 
-- **Contact:** My updated contact methods are available on my **[GitHub Profile](https://github.com/warlyn)**.
+- **Contact:** My updated contact methods are available on my **[GitHub Profile](https://github.com/platinum-place)**.
 - **Issues:** For package bugs, please open an issue in this repository.
 
 ## 📚 Additional Resources

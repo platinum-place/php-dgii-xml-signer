@@ -1,45 +1,53 @@
-# PHP DGII XML Signer - Development Guide
+# PHP DGII XML Signer - Guía de Desarrollo
 
-Specialized PHP library for digital signing of XML documents according to **DGII** (Dominican Republic) standards.
+Este archivo es la fuente central de verdad para la arquitectura y convenciones de este proyecto. Está diseñado para ser interpretado tanto por **desarrolladores humanos** como por **Agentes de IA** (Gemini, Cursor, Copilot).
 
-## 🚀 Project Overview
+## 🚀 Descripción del Proyecto
 
-This package implements the **XMLDSig** standard with critical customizations in the canonicalization (C14N) process to ensure that the signature is accepted by DGII servers.
+Este paquete implementa el estándar **XMLDSig** con personalizaciones críticas en el proceso de canonicalización (C14N) para asegurar que la firma sea aceptada por los servidores de la DGII.
 
-### Core Technologies
+### Tecnologías Principales
 - **PHP 8.1+**
-- **Base Library:** `selective/xmldsig`.
-- **OpenSSL:** For certificate and private key reading.
+- **Librería Base:** `selective/xmldsig`.
+- **OpenSSL:** Para la lectura de certificados y claves privadas.
 
-### Official References
+### Referencias Oficiales y Contexto
+- **Contexto DGII:** Para reglas de negocio y normativa técnica oficial, consulta [docs/dgii/GEMINI.md](./docs/dgii/GEMINI.md).
 - **[Documentación sobre e-CF](https://dgii.gov.do/cicloContribuyente/facturacion/comprobantesFiscalesElectronicosE-CF/Paginas/documentacionSobreE-CF.aspx)**
 - **[Instructivo de Firmado de e-CF (PDF)](https://dgii.gov.do/cicloContribuyente/facturacion/comprobantesFiscalesElectronicosE-CF/Documentacin%20sobre%20eCF/Instructivos%20sobre%20Facturaci%C3%B3n%20Electr%C3%B3nica/Firmado%20de%20e-CF.pdf)**
 
 
-## 🏗️ Architecture
+## 🏗️ Arquitectura
 
-- **\`SignManager\`:** Simplified entry point for the user.
-- **\`XmlSigner\`:** Core class that overrides base library behaviors to comply with DGII.
-- **\`Exception/\`:** Custom exceptions for the signing domain.
+- **`SignManager`:** Punto de entrada simplificado para el usuario.
+- **`XmlSigner`:** Clase principal que sobreescribe los comportamientos de la librería base para cumplir con la DGII.
+- **`Exception/`:** Excepciones personalizadas para el dominio de firma.
 
-## 🛠️ Development Commands
+## 🤖 Alineación de IA
+Si eres un Agente de IA trabajando en este repositorio:
+1. **Prioridad Absoluta:** No ignores las reglas de canonicalización descritas en `XmlSigner`. Cualquier cambio debe ser validado contra el instructivo de la DGII en `docs/dgii/`.
+2. **Estilo de Código:** Mantén los DocBlocks en inglés, pero el soporte técnico y comentarios de arquitectura en español.
+3. **Pruebas:** Siempre verifica que los cambios no rompan la compatibilidad con los certificados OpenSSL "legacy".
 
-\`\`\`bash
-# Run tests (PHPUnit)
+
+## 🛠️ Comandos de Desarrollo
+
+```bash
+# Ejecutar pruebas (PHPUnit)
 composer test
 
-# Fix code style (PHP-CS-Fixer)
+# Corregir estilo de código (PHP-CS-Fixer)
 composer lint
 
-# Static analysis (PHPStan)
+# Análisis estático (PHPStan)
 composer analyze
-\`\`\`
+```
 
-## 📝 Development Conventions
+## 📝 Convenciones de Desarrollo
 
-1.  **DocBlocks:** All source code must be documented using DocBlocks in **English**.
-2.  **Canonicalization:** Any changes in \`XmlSigner::signDocument\` or \`XmlSigner::appendSignature\` must be validated against the official DGII schema, as normalization is extremely sensitive.
-3.  **Certificates:** Ensure compatibility with OpenSSL "legacy" configuration if required for certain \`.p12\` certificates.
+1.  **DocBlocks:** Todo el código fuente debe estar documentado usando DocBlocks en **Inglés** (estándar de código).
+2.  **Canonicalización:** Cualquier cambio en `XmlSigner::signDocument` o `XmlSigner::appendSignature` debe ser validado contra el esquema oficial de la DGII, ya que la normalización es extremadamente sensible.
+3.  **Certificados:** Asegurar la compatibilidad con la configuración "legacy" de OpenSSL si es requerido para ciertos certificados `.p12`.
 
 ---
-*This file serves as context for Gemini CLI. Keep it updated upon architectural changes.*
+*Este archivo sirve como contexto para Gemini CLI. Manténgalo actualizado ante cambios arquitectónicos.*
