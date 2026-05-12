@@ -42,7 +42,7 @@ final class SignManager
     public function validateCertificate(string $cert_store, string $password): array
     {
         if (!openssl_pkcs12_read($cert_store, $certs, $password)) {
-            throw new DgiiXmlSignerException("Error: Unable to read certificate content. Verify password or OpenSSL 'legacy' configuration.");
+            throw new DgiiXmlSignerException("No es posible leer el contenido del certificado. Verifique la contraseña o la configuración 'legacy' de OpenSSL.");
         }
 
         return $certs;
