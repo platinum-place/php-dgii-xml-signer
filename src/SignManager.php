@@ -2,62 +2,59 @@
 
 namespace PlatinumPlace\DgiiXmlSigner;
 
-use PlatinumPlace\DgiiXmlSigner\Exception\DgiiXmlSignerException;
+use DOMDocument;
 use Selective\XmlDSig\Algorithm;
 use Selective\XmlDSig\CryptoSigner;
+use Selective\XmlDSig\CryptoVerifier;
+use Selective\XmlDSig\Exception\XmlSignatureValidatorException;
 use Selective\XmlDSig\PrivateKeyStore;
+use Selective\XmlDSig\PublicKeyStore;
 
-/**
- * Manager to handle XML signing according to DGII requirements.
- *
- * This class acts as the main entry point for digital signing of
- * electronic fiscal receipts (e-CF) following the XMLDSig standard
- * and Dominican Republic technical specifications.
- */
+/*
+Descargar la librería XMLDSIG desde https://github.com/selective-php/xmldsig
+Probado en las versiones de php 8.1.12 y 8.1.13
+*/
+/*
+Nota:
+**Refactorizaciones al archivo XmlSigner.php
+al instanciar la clase DOMDocument coloque la propiedad preserveWhiteSpace a false debido a
+que los espacios en blanco no deben ser preservados Existe otra función que recibe un DOMDocument recuerde ajustar este valor antes de enviar el
+objeto.
+ $xml->preserveWhiteSpace = true; cambiar a $xml->preserveWhiteSpace = false;
+ **Por otro lado
+ $canonicalData = $element->C14N(true, false); cambiar a $canonicalData =
+$element->C14N(false, false);
+ puede dejarlos sin parámetros puesto que sus valores por defecto son false, es decir puede ser
+=> $canonicalData = $element->C14N()
+ **En la función appendSignature puede comentar las líneas 154 hasta la 170, los tag KeyValue,
+RSAKeyValue, Exponent no son necesarios
+ **Recuerde habilitar la extensión openssl en su archivo php.ini, en algunas distribuciones esta
+deshabilitado por defecto.
+*/
 final class SignManager
 {
     /**
-     * Alias for sing() method for clarity and PSR standards compliance.
+     * The constructor.
      *
-     * @param string $cert_store Binary content of the certificate file (.p12)
-     * @param string $password Certificate password
-     * @param string $xml XML content to be signed
-     * @return string The resulting XML with the embedded digital signature
-     * @throws DgiiXmlSignerException If an error occurs during the signing process
+     * @param string $cert_store contenido del archivo p12
+     * @param string $password contraseña para acceder a la información contenida en el
+    certificado
+     * @param string $xml contenido del archivo xml
      */
     public function sign(string $cert_store, string $password, string $xml): string
     {
         return $this->sing($cert_store, $password, $xml);
     }
 
-    /**
-     * Validates and parses the PKCS#12 certificate store.
-     *
-     * @param string $cert_store Binary content of the certificate file (.p12)
-     * @param string $password Password to access the certificate private key
-     * @return array<string, mixed> The parsed certificate data containing 'cert' and 'pkey'
-     * @throws DgiiXmlSignerException If certificate is invalid, password is incorrect
-     *                                or OpenSSL 'legacy' configuration is required.
-     */
     public function validateCertificate(string $cert_store, string $password): array
     {
         if (!openssl_pkcs12_read($cert_store, $certs, $password)) {
-            throw new DgiiXmlSignerException("No es posible leer el contenido del certificado. Verifique la contraseña o la configuración 'legacy' de OpenSSL.");
+            throw new \RuntimeException('No fue posible leer el contenido del certificado.');
         }
 
         return $certs;
     }
 
-    /**
-     * Sign the XML following the nomenclature suggested by DGII documentation.
-     *
-     * @param string $cert_store Binary content of the certificate file (.p12)
-     * @param string $password Password to access the certificate private key
-     * @param string $xml XML content of the file to process
-     * @return string Digitally signed XML
-     * @throws DgiiXmlSignerException If certificate is invalid, password is incorrect
-     *                                or there is a technical error in normalization/signing
-     */
     public function sing(string $cert_store, string $password, string $xml): string
     {
         $certs = $this->validateCertificate($cert_store, $password);
@@ -75,5 +72,27 @@ final class SignManager
         $xmlSigner->setReferenceUri('');
 
         return $xmlSigner->signXml($xml);
+    }
+
+    public function verifyXmlSignature(string $xmlContent): void
+    {
+        $doc = new DOMDocument();
+        $doc->preserveWhiteSpace = false;
+        $doc->formatOutput = false;
+
+        if (! $doc->loadXML($xmlContent)) {
+            throw new XmlSignatureValidatorException('No se pudo cargar el XML.');
+        }
+
+        $publicKeyStore = new PublicKeyStore();
+        $publicKeyStore->loadFromDocument($doc);
+
+        $cryptoVerifier = new CryptoVerifier($publicKeyStore);
+
+        $signatureVerifier = new XmlSignatureVerifier($cryptoVerifier, false);
+
+        if (! $signatureVerifier->verifyXml($xmlContent)) {
+            throw new XmlSignatureValidatorException("No es posible leer el contenido del certificado. Verifique la contraseña o la configuración 'legacy' de OpenSSL.");
+        }
     }
 }

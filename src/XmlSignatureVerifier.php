@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Domains\Dgii\Helpers\XmlDsig;
+namespace PlatinumPlace\DgiiXmlSigner;
 
 use DOMDocument;
 use DOMElement;
@@ -30,7 +30,7 @@ final class XmlSignatureVerifier
     {
         $this->cryptoVerifier = $cryptoVerifier;
         $this->preserveWhiteSpace = $preserveWhiteSpace;
-        $this->xmlReader = new XmlReader;
+        $this->xmlReader = new XmlReader();
     }
 
     /**
@@ -46,7 +46,7 @@ final class XmlSignatureVerifier
     public function verifyXml(string $data): bool
     {
         // Read the xml file content
-        $xml = new DOMDocument;
+        $xml = new DOMDocument();
         $xml->preserveWhiteSpace = $this->preserveWhiteSpace;
         $xml->formatOutput = false;
         $isValidSignature = $xml->loadXML($data);
