@@ -2,7 +2,7 @@
 
 All notable versions of this project will be documented in this file following the [Keep a Changelog](https://keepachangelog.com/en/1.0.0/) format and complying with [Semantic Versioning](https://semver.org/).
 
-## [1.4.0] - 2026-05-24
+## [1.3.1] - 2026-05-24
 ### Added
 - `XmlSignatureVerifier` class to support technical verification of e-CF XMLDSig signatures.
 - `verifyXmlSignature` method in `SignManager` as the public API for signature validation.
