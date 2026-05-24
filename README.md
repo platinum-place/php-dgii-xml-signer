@@ -4,10 +4,6 @@
 [![Total Downloads](https://img.shields.io/packagist/dt/platinum-place/php-dgii-xml-signer.svg?style=flat-square)](https://packagist.org/packages/platinum-place/php-dgii-xml-signer)
 [![GitHub License](https://img.shields.io/github/license/platinum-place/php-dgii-xml-signer.svg?style=flat-square)](LICENSE)
 
-Firmador de XML especializado para cumplir con los estándares de **Facturación Electrónica (e-CF)** de la **Dirección General de Impuestos Internos (DGII)** en la República Dominicana.
-
-> [Read in English 🇺🇸](./README_EN.md)
-
 ---
 
 ## 🚀 Características
@@ -125,7 +121,7 @@ Este proyecto está optimizado para ser desarrollado tanto por humanos como por 
 
 - **Reglas Arquitectónicas:** Si deseas contribuir, por favor revisa el archivo [GEMINI.md](./GEMINI.md), el cual contiene las convenciones y reglas técnicas que deben seguirse (y que tu IA debe leer).
 - **Guía de Contribución:** Detalles sobre cómo enviar PRs y configurar el entorno en [CONTRIBUTING.md](./CONTRIBUTING.md).
-- **Contexto DGII:** La normativa técnica detallada que rige este paquete se encuentra en [docs/dgii/GEMINI.md](./docs/dgii/GEMINI.md).
+- **Contexto DGII:** La normativa técnica detallada que rige este paquete se encuentra en [docs/GEMINI.md](./docs/GEMINI.md).
 
 ---
 
