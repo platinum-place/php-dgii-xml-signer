@@ -2,7 +2,7 @@
 
 All notable versions of this project will be documented in this file following the [Keep a Changelog](https://keepachangelog.com/en/1.0.0/) format and complying with [Semantic Versioning](https://semver.org/).
 
-## [1.3.2] - 2026-06-01
+## [1.3.3] - 2026-06-01
 ### Removed
 - Unused development guideline files and specification docs (`GEMINI.md`, `docs/`) to keep the repository lightweight and clean.
 
