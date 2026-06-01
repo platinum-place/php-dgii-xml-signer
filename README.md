@@ -6,7 +6,7 @@
 
 ---
 
-## 🚀 Características
+## Características
 
 - **Estándar XMLDSig:** Implementación robusta basada en `selective/xmldsig`.
 - **Canonicalización Especial:** Ajustes técnicos en la normalización C14N requeridos por el validador oficial de la DGII.
@@ -15,7 +15,7 @@
 
 ---
 
-## 🛠️ Créditos y Base Técnica
+## Créditos y Base Técnica
 
 Este proyecto se basa directamente en las especificaciones del **[Instructivo sobre Facturación Electrónica: Firmado de e-CF](https://dgii.gov.do/cicloContribuyente/facturacion/comprobantesFiscalesElectronicosE-CF/Documentacin%20sobre%20eCF/Instructivos%20sobre%20Facturaci%C3%B3n%20Electr%C3%B3nica/Firmado%20de%20e-CF.pdf)** publicado por la **DGII**.
 
@@ -23,7 +23,7 @@ Para la implementación técnica, utilizamos como base la librería **[selective
 
 ---
 
-## ⚠️ Aclaraciones Importantes
+## Aclaraciones Importantes
 
 Aunque la documentación de la DGII proporciona ejemplos, existen detalles críticos en la implementación de la librería base que deben ajustarse para que el XML sea aceptado.
 
@@ -85,7 +85,7 @@ La documentación menciona que la librería fue probada en PHP versiones 8.1.12 
 
 ---
 
-## 🛠️ Instalación
+## Instalación
 
 ```bash
 composer require platinum-place/php-dgii-xml-signer
@@ -93,7 +93,7 @@ composer require platinum-place/php-dgii-xml-signer
 
 ---
 
-## 📖 Uso rápido
+## Uso rápido
 
 ```php
 use PlatinumPlace\DgiiXmlSigner\SignManager;
@@ -122,7 +122,7 @@ try {
 
 ---
 
-## 🛠️ Desarrollo y Contribución
+## Desarrollo y Contribución
 
 Este proyecto está abierto a contribuciones para mantenerse al día con los estándares de la DGII.
 
@@ -130,7 +130,7 @@ Este proyecto está abierto a contribuciones para mantenerse al día con los est
 
 ---
 
-## 🙋‍♂️ Soporte y Consultoría
+## Soporte y Consultoría
 
 Si necesitas asistencia técnica con la implementación de este paquete o tienes dudas generales sobre el ecosistema de **Facturación Electrónica en la República Dominicana**, puedes contactarme directamente.
 
@@ -139,7 +139,7 @@ Ofrezco servicios de consultoría especializada para empresas que buscan certifi
 - **Contacto:** Mis métodos de contacto actualizados están disponibles en mi **[Perfil de GitHub](https://github.com/platinum-place)**.
 - **Issues:** Para errores del paquete, por favor abre un issue en este repositorio.
 
-## 📚 Recursos Adicionales
+## Recursos Adicionales
 
 - **[Documentación Oficial DGII - Facturación Electrónica](https://dgii.gov.do/cicloContribuyente/facturacion/comprobantesFiscalesElectronicosE-CF/Paginas/documentacionSobreE-CF.aspx)**: Portal principal con toda la normativa y documentación técnica.
 - **[Instructivo de Firmado de e-CF (PDF)](https://dgii.gov.do/cicloContribuyente/facturacion/comprobantesFiscalesElectronicosE-CF/Documentacin%20sobre%20eCF/Instructivos%20sobre%20Facturaci%C3%B3n%20Electr%C3%B3nica/Firmado%20de%20e-CF.pdf)**: Guía técnica detallada sobre el proceso de firma digital.
