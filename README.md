@@ -107,21 +107,26 @@ $password = 'tu_password';
 // XML a firmar
 $xml = '<root>...</root>';
 
-// Firmar
+// Firmar XML
 $signedXml = $signer->sign($certContent, $password, $xml);
-
 file_put_contents('signed_invoice.xml', $signedXml);
+
+// Verificar Firma XML
+try {
+    $signer->verifyXmlSignature($signedXml);
+    echo "¡La firma digital del XML es válida!";
+} catch (\Selective\XmlDSig\Exception\XmlSignatureValidatorException $e) {
+    echo "Firma inválida o error de verificación: " . $e->getMessage();
+}
 ```
 
 ---
 
 ## 🛠️ Desarrollo y Contribución
 
-Este proyecto está optimizado para ser desarrollado tanto por humanos como por **Asistentes de IA**.
+Este proyecto está abierto a contribuciones para mantenerse al día con los estándares de la DGII.
 
-- **Reglas Arquitectónicas:** Si deseas contribuir, por favor revisa el archivo [GEMINI.md](./GEMINI.md), el cual contiene las convenciones y reglas técnicas que deben seguirse (y que tu IA debe leer).
 - **Guía de Contribución:** Detalles sobre cómo enviar PRs y configurar el entorno en [CONTRIBUTING.md](./CONTRIBUTING.md).
-- **Contexto DGII:** La normativa técnica detallada que rige este paquete se encuentra en [docs/GEMINI.md](./docs/GEMINI.md).
 
 ---
 

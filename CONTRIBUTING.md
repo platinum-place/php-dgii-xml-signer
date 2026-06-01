@@ -10,7 +10,6 @@ To contribute, follow these steps:
 2.  Create a branch for your feature or fix (`git checkout -b feature/new-improvement`).
 3.  Install dependencies: `composer install`.
 4.  Make your changes ensuring you follow code standards (PSR-12).
-    - **Note for AI Users:** If you are using an AI assistant (Gemini, Cursor, etc.), ensure it has read the [GEMINI.md](./GEMINI.md) file for architectural context.
 5.  **Run tests**: Ensure everything is still working with `composer test`.
 
 6.  **Verify code quality**:

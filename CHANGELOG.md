@@ -2,6 +2,14 @@
 
 All notable versions of this project will be documented in this file following the [Keep a Changelog](https://keepachangelog.com/en/1.0.0/) format and complying with [Semantic Versioning](https://semver.org/).
 
+## [1.3.2] - 2026-06-01
+### Removed
+- Unused development guideline files and specification docs (`GEMINI.md`, `docs/`) to keep the repository lightweight and clean.
+
+### Changed
+- Updated `README.md` to document the XML signature verification method (`verifyXmlSignature`).
+- Cleaned up references to deleted files in `README.md` and `CONTRIBUTING.md`.
+
 ## [1.3.1] - 2026-05-24
 ### Added
 - `XmlSignatureVerifier` class to support technical verification of e-CF XMLDSig signatures.
